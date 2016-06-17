@@ -30,6 +30,7 @@ public class SlackReceiveHandler extends AbstractHandler {
 
                 if (isValidCommandToken(command, token)) {
                     SlackCommandEvent event = new SlackCommandEvent(username, command, text);
+                    Sponge.getEventManager().post(event);
                     return;
                 }
 
