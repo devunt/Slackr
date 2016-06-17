@@ -1,3 +1,8 @@
+# project settings
+.gradle
 .idea
-Slack.iml
+
+# build paths
+build
+data
 target

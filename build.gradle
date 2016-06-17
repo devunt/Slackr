@@ -1,0 +1,29 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
+
+group 'com.github.mmonkey'
+version '1.0.0'
+
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+repositories {
+    mavenCentral()
+    maven {
+        name 'Sponge maven repo'
+        url 'http://repo.spongepowered.org/maven'
+    }
+}
+
+dependencies {
+    compile 'org.spongepowered:spongeapi:4.1.0-SNAPSHOT'
+    compile 'net.gpedro.integrations.slack:slack-webhook:1.1.1'
+    compile 'org.eclipse.jetty:jetty-server:9.2.14.v20151106'
+}
+
+shadowJar {
+    dependencies {
+        exclude(dependency('org.spongepowered:spongeapi'))
+    }
+}
