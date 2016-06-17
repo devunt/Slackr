@@ -56,4 +56,22 @@ public class SlackSender {
         }
 
     }
+
+    /**
+     * Send a command response to slack
+     *
+     * @param message String
+     */
+    public void sendCommandResponse(String message) {
+
+        if (!message.isEmpty()) {
+
+            SlackMessage slackMessage = new SlackMessage();
+            slackMessage.setText(message);
+
+            Thread thread = new Thread(new SlackSendService(slackMessage));
+            thread.start();
+        }
+
+    }
 }
