@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.glowstone.io</groupId>
-    <artifactId>Slack</artifactId>
-    <version>1.0</version>
+    <artifactId>SlackSponge</artifactId>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <properties>
