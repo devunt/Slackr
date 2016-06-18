@@ -14,7 +14,7 @@ public class SlackSender {
      * SlackSender constructor
      */
     public SlackSender() {
-        String url = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "webhookUrl").getString("");
+        String url = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.WEBHOOK_SETTINGS, "webhookUrl").getString("");
         this.api = new SlackApi(url);
     }
 

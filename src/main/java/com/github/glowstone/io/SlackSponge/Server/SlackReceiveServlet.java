@@ -5,9 +5,6 @@ import com.github.glowstone.io.SlackSponge.Events.SlackCommandEvent;
 import com.github.glowstone.io.SlackSponge.Events.SlackMessageEvent;
 import com.github.glowstone.io.SlackSponge.Models.SlackRequest;
 import com.github.glowstone.io.SlackSponge.SlackSponge;
-import net.gpedro.integrations.slack.SlackMessage;
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.spongepowered.api.Sponge;
 
 import javax.servlet.ServletException;
@@ -31,7 +28,7 @@ public class SlackReceiveServlet extends HttpServlet {
 
         SlackRequest slackRequest = new SlackRequest(request);
 
-        if (!slackRequest.getUsername().equals("slackbot")) {
+        if (!slackRequest.getUserId().equals("USLACKBOT")) {
 
             if (isValidCommandToken(slackRequest.getCommand(), slackRequest.getToken())) {
                 SlackCommandEvent event = new SlackCommandEvent(slackRequest.getUsername(), slackRequest.getCommand(), slackRequest.getText());
@@ -56,7 +53,7 @@ public class SlackReceiveServlet extends HttpServlet {
      * @return boolean
      */
     private boolean isValidMessageToken(String token) {
-        String defaultToken = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "token").getString("");
+        String defaultToken = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.WEBHOOK_SETTINGS, "token").getString("");
         return (!token.isEmpty() && token.equals(defaultToken));
     }
 
