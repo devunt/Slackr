@@ -10,11 +10,12 @@ public class DefaultConfig extends Config {
     public static final String SLACK_PLAYERS = "slackPlayers";
 
     /**
-     * @param plugin SlackSponge
+     * DefaultConfig constructor
+     *
      * @param configDir File
      */
-    public DefaultConfig(SlackSponge plugin, File configDir) {
-        super(plugin, configDir);
+    public DefaultConfig(File configDir) {
+        super(configDir);
         setConfigFile(new File(configDir, SlackSponge.NAME + ".conf"));
     }
 

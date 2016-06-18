@@ -6,10 +6,18 @@ public class SlackSendService implements Runnable {
 
     private SlackMessage message;
 
+    /**
+     * SlackSendService constructor
+     *
+     * @param message SlackMessage
+     */
     public SlackSendService(SlackMessage message) {
         this.message = message;
     }
 
+    /**
+     * Send the SlackMessage
+     */
     @Override
     public void run() {
         SlackSender.getInstance().getSlackApi().call(this.message);

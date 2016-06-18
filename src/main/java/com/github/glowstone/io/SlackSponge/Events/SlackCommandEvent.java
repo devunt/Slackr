@@ -14,6 +14,8 @@ public class SlackCommandEvent implements Event, Cancellable {
     private boolean cancelled = false;
 
     /**
+     * SlackCommandEvent constructor
+     *
      * @param username String
      * @param command  String
      * @param text     String
@@ -27,6 +29,8 @@ public class SlackCommandEvent implements Event, Cancellable {
     }
 
     /**
+     * Get the Slack username of the command sender
+     *
      * @return String
      */
     public String getUsername() {
@@ -34,6 +38,8 @@ public class SlackCommandEvent implements Event, Cancellable {
     }
 
     /**
+     * Get the command
+     *
      * @return String
      */
     public String getCommand() {
@@ -41,22 +47,39 @@ public class SlackCommandEvent implements Event, Cancellable {
     }
 
     /**
+     * Get the text of the command
+     *
      * @return String
      */
     public String getText() {
         return this.text;
     }
 
+    /**
+     * Is this event cancelled?
+     *
+     * @return boolean
+     */
     @Override
     public boolean isCancelled() {
         return this.cancelled;
     }
 
+    /**
+     * Should this event be cancelled?
+     *
+     * @param cancel boolean
+     */
     @Override
     public void setCancelled(boolean cancel) {
         this.cancelled = cancel;
     }
 
+    /**
+     * Get the cause of this event
+     *
+     * @return Cause
+     */
     @Override
     public Cause getCause() {
         return this.cause;

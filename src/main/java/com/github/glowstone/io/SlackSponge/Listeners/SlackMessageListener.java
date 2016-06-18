@@ -8,6 +8,11 @@ import org.spongepowered.api.text.format.TextColors;
 
 public class SlackMessageListener {
 
+    /**
+     * Handle an incoming message event from Slack
+     *
+     * @param event SlackMessageEvent
+     */
     @Listener
     public void onSlackMessage(SlackMessageEvent event) {
         Text.Builder message = Text.builder();

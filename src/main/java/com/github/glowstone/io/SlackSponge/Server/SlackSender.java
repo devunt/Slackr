@@ -10,9 +10,11 @@ public class SlackSender {
     private static SlackSender instance;
     private SlackApi api;
 
+    /**
+     * SlackSender constructor
+     */
     public SlackSender() {
-        String url = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.SLACK_SETTINGS, "webHookUrl")
-                .getString("");
+        String url = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.SLACK_SETTINGS, "webHookUrl").getString("");
         this.api = new SlackApi(url);
     }
 
@@ -43,8 +45,7 @@ public class SlackSender {
 
         if (!message.isEmpty() && !username.isEmpty()) {
 
-            boolean showHelmet = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.SLACK_SETTINGS,
-                    "showHelmet").getBoolean(true);
+            boolean showHelmet = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.SLACK_SETTINGS, "showHelmet").getBoolean(true);
 
             SlackMessage slackMessage = new SlackMessage();
             slackMessage.setText(message);

@@ -14,9 +14,11 @@ public class SlackMessageEvent implements Event, Cancellable {
     private boolean cancelled = false;
 
     /**
-     * @param channel String
+     * SlackMessageEvent constructor
+     *
+     * @param channel  String
      * @param username String
-     * @param text String
+     * @param text     String
      */
     public SlackMessageEvent(String channel, String username, String text) {
         this.channel = channel;
@@ -27,6 +29,9 @@ public class SlackMessageEvent implements Event, Cancellable {
     }
 
     /**
+     * Get the formatted message text
+     * <username> message text
+     *
      * @return String
      */
     public String getMessage() {
@@ -34,6 +39,8 @@ public class SlackMessageEvent implements Event, Cancellable {
     }
 
     /**
+     * Get the Slack channel of this message
+     *
      * @return String
      */
     public String getChannel() {
@@ -41,6 +48,8 @@ public class SlackMessageEvent implements Event, Cancellable {
     }
 
     /**
+     * Get the Slack username of this message
+     *
      * @return String
      */
     public String getUsername() {
@@ -48,22 +57,39 @@ public class SlackMessageEvent implements Event, Cancellable {
     }
 
     /**
+     * Get the text of this message
+     *
      * @return String
      */
     public String getText() {
         return this.text;
     }
 
+    /**
+     * Is this event cancelled?
+     *
+     * @return boolean
+     */
     @Override
     public boolean isCancelled() {
         return this.cancelled;
     }
 
+    /**
+     * Should this event be cancelled?
+     *
+     * @param cancel boolean
+     */
     @Override
     public void setCancelled(boolean cancel) {
         this.cancelled = cancel;
     }
 
+    /**
+     * Get the cause of this event
+     *
+     * @return Cause
+     */
     @Override
     public Cause getCause() {
         return this.cause;

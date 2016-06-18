@@ -19,8 +19,8 @@ repositories {
 dependencies {
     compile 'org.spongepowered:spongeapi:4.1.0-SNAPSHOT'
     shadow 'net.gpedro.integrations.slack:slack-webhook:1.1.1'
-    shadow 'org.eclipse.jetty:jetty-server:9.2.14.v20151106'
-    shadow 'org.eclipse.jetty:jetty-servlet:9.3.5.v20151012'
+    shadow 'org.eclipse.jetty:jetty-server:9.3.8.v20160314'
+    shadow 'org.eclipse.jetty:jetty-servlet:9.3.8.v20160314'
 }
 
 configurations {

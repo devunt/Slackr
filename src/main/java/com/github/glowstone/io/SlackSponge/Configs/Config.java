@@ -10,20 +10,14 @@ import java.io.IOException;
 
 abstract public class Config {
 
-    private SlackSponge plugin;
     private File configDir;
     private File configFile;
     private ConfigurationLoader<CommentedConfigurationNode> configLoader;
     private CommentedConfigurationNode config;
 
     /**
-     * @return SlackSponge
-     */
-    public SlackSponge getPlugin() {
-        return this.plugin;
-    }
-
-    /**
+     * Get this config's directory
+     *
      * @return File
      */
     public File getConfigDir() {
@@ -31,6 +25,8 @@ abstract public class Config {
     }
 
     /**
+     * Get this config's file
+     *
      * @return File
      */
     public File getConfigFile() {
@@ -38,6 +34,8 @@ abstract public class Config {
     }
 
     /**
+     * Set this config's file
+     *
      * @param configFile File
      */
     public void setConfigFile(File configFile) {
@@ -45,6 +43,8 @@ abstract public class Config {
     }
 
     /**
+     * Get the configuration loader
+     *
      * @return ConfigurationLoader<CommentedConfigurationNode>
      */
     public ConfigurationLoader<CommentedConfigurationNode> getConfigLoader() {
@@ -52,6 +52,8 @@ abstract public class Config {
     }
 
     /**
+     * Set the configuration loader
+     *
      * @param configLoader ConfigurationLoader<CommentedConfigurationNode>
      */
     public void setConfigLoader(ConfigurationLoader<CommentedConfigurationNode> configLoader) {
@@ -59,6 +61,8 @@ abstract public class Config {
     }
 
     /**
+     * Get this config
+     *
      * @return CommendedConfigurationNode
      */
     public CommentedConfigurationNode get() {
@@ -66,6 +70,8 @@ abstract public class Config {
     }
 
     /**
+     * Set this config
+     *
      * @param config CommentedConfigurationNode
      */
     public void setConfig(CommentedConfigurationNode config) {
@@ -73,23 +79,12 @@ abstract public class Config {
     }
 
     /**
-     * @param plugin SlackSponge
+     * Config constructor
+     *
      * @param configDir File
      */
-    public Config(SlackSponge plugin, File configDir) {
-        this.plugin = plugin;
+    public Config(File configDir) {
         this.configDir = configDir;
-    }
-
-    /**
-     * @param plugin SlackSponge
-     * @param configDir File
-     * @param configFile File
-     */
-    public Config(SlackSponge plugin, File configDir, File configFile) {
-        this.plugin = plugin;
-        this.configDir = configDir;
-        this.configFile = configFile;
     }
 
     /**
@@ -126,7 +121,7 @@ abstract public class Config {
     abstract protected void setDefaults();
 
     /**
-     * Save Config
+     * Save this config to disk
      */
     public void save() {
 

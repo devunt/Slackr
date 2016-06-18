@@ -18,8 +18,7 @@ import org.spongepowered.api.plugin.Plugin;
 
 import java.io.File;
 
-@Plugin(id = "slacksponge", name = SlackSponge.NAME, version = SlackSponge.VERSION,
-        description = "Send messages to and from Slack")
+@Plugin(id = "slacksponge", name = SlackSponge.NAME, version = SlackSponge.VERSION, description = "Send messages to and from Slack")
 public class SlackSponge {
 
     private static SlackSponge instance;
@@ -39,6 +38,8 @@ public class SlackSponge {
     private static DefaultConfig defaultConfig;
 
     /**
+     * Get the plugin instance
+     *
      * @return SlackSponge
      */
     public static SlackSponge getInstance() {
@@ -66,6 +67,11 @@ public class SlackSponge {
         return defaultConfig;
     }
 
+    /**
+     * Setup SlackSponge instance, logger and configs
+     *
+     * @param event GamePreInitializationEvent
+     */
     @Listener
     public void onPreInit(GamePreInitializationEvent event) {
 
@@ -80,10 +86,15 @@ public class SlackSponge {
         }
 
         // Load default config
-        defaultConfig = new DefaultConfig(this, this.configDir);
+        defaultConfig = new DefaultConfig(this.configDir);
         defaultConfig.load();
     }
 
+    /**
+     * Setup SlackSponge's event listeners
+     *
+     * @param event GameInitializationEvent
+     */
     @Listener
     public void onGameInit(GameInitializationEvent event) {
         new SlackIncomingServer();

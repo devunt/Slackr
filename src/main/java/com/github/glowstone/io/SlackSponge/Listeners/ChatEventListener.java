@@ -10,6 +10,11 @@ import java.util.Optional;
 
 public class ChatEventListener {
 
+    /**
+     * Handle chat messages from in-game chat channel
+     *
+     * @param event MessageChannelEvent.Chat
+     */
     @Listener
     public void onChatEvent(MessageChannelEvent.Chat event) {
         Cause cause = event.getCause();
