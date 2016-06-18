@@ -14,7 +14,7 @@ public class SlackIncomingServer {
      */
     public SlackIncomingServer() {
 
-        int port = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.SLACK_SETTINGS, "port").getInt(8765);
+        int port = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "port").getInt(8765);
         this.server = new Server(port);
 
         ServletHandler handler = new ServletHandler();

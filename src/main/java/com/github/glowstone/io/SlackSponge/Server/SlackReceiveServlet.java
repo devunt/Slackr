@@ -3,7 +3,9 @@ package com.github.glowstone.io.SlackSponge.Server;
 import com.github.glowstone.io.SlackSponge.Configs.DefaultConfig;
 import com.github.glowstone.io.SlackSponge.Events.SlackCommandEvent;
 import com.github.glowstone.io.SlackSponge.Events.SlackMessageEvent;
+import com.github.glowstone.io.SlackSponge.Models.SlackRequest;
 import com.github.glowstone.io.SlackSponge.SlackSponge;
+import net.gpedro.integrations.slack.SlackMessage;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.spongepowered.api.Sponge;
@@ -27,24 +29,18 @@ public class SlackReceiveServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        String username = request.getParameter("user_name");
+        SlackRequest slackRequest = new SlackRequest(request);
 
-        if (!username.equals("slackbot")) {
-            String channel = request.getParameter("channel_name");
-            String text = request.getParameter("text");
-            String token = request.getParameter("token");
-            String command = request.getParameter("command");
+        if (!slackRequest.getUsername().equals("slackbot")) {
 
-            if (command != null) {
-                if (isValidCommandToken(command, token)) {
-                    SlackCommandEvent event = new SlackCommandEvent(username, command, text);
-                    Sponge.getEventManager().post(event);
-                    return;
-                }
+            if (isValidCommandToken(slackRequest.getCommand(), slackRequest.getToken())) {
+                SlackCommandEvent event = new SlackCommandEvent(slackRequest.getUsername(), slackRequest.getCommand(), slackRequest.getText());
+                Sponge.getEventManager().post(event);
+                return;
             }
 
-            if (isValidMessageToken(token)) {
-                SlackMessageEvent event = new SlackMessageEvent(channel, username, text);
+            if (isValidMessageToken(slackRequest.getToken())) {
+                SlackMessageEvent event = new SlackMessageEvent(slackRequest.getChannelName(), slackRequest.getUsername(), slackRequest.getText());
                 Sponge.getEventManager().post(event);
                 return;
             }
@@ -60,7 +56,7 @@ public class SlackReceiveServlet extends HttpServlet {
      * @return boolean
      */
     private boolean isValidMessageToken(String token) {
-        String defaultToken = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.SLACK_SETTINGS, "token").getString("");
+        String defaultToken = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "token").getString("");
         return (!token.isEmpty() && token.equals(defaultToken));
     }
 
