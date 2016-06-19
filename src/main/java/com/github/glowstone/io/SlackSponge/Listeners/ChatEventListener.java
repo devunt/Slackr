@@ -24,7 +24,7 @@ public class ChatEventListener {
 
         if (player.isPresent()) {
             String username = player.get().getName();
-            SlackSender.getInstance().send(text, username);
+            SlackSender.getWebhookInstance().sendMessage(text, username);
         }
     }
 }

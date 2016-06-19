@@ -1,10 +1,9 @@
 package com.github.glowstone.io.SlackSponge.Server;
 
-import com.github.glowstone.io.SlackSponge.Configs.DefaultConfig;
-import com.github.glowstone.io.SlackSponge.Events.SlackCommandEvent;
-import com.github.glowstone.io.SlackSponge.Events.SlackMessageEvent;
+import com.github.glowstone.io.SlackSponge.Events.SlackRequestEvent;
 import com.github.glowstone.io.SlackSponge.Models.SlackRequest;
 import com.github.glowstone.io.SlackSponge.SlackSponge;
+import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.api.Sponge;
 
 import javax.servlet.ServletException;
@@ -12,8 +11,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 
 public class SlackReceiveServlet extends HttpServlet {
+
+    private static final String[] validParams = {
+            "token", "team_id", "team_domain", "channel_id",  "channel_name", "user_id", "user_name", "text", "timestamp", "trigger_word", "service_id",
+            "command", "response_url"
+    };
 
     /**
      * Handle a POST request
@@ -26,47 +33,40 @@ public class SlackReceiveServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        SlackRequest slackRequest = new SlackRequest(request);
-
-        if (!slackRequest.getUserId().equals("USLACKBOT")) {
-
-            if (isValidCommandToken(slackRequest.getCommand(), slackRequest.getToken())) {
-                SlackCommandEvent event = new SlackCommandEvent(slackRequest.getUsername(), slackRequest.getCommand(), slackRequest.getText());
-                Sponge.getEventManager().post(event);
-                return;
-            }
-
-            if (isValidMessageToken(slackRequest.getToken())) {
-                SlackMessageEvent event = new SlackMessageEvent(slackRequest.getChannelName(), slackRequest.getUsername(), slackRequest.getText());
-                Sponge.getEventManager().post(event);
-                return;
-            }
-
-            SlackSponge.getLogger().error("Token from Slack is invalid.");
+        if (!isValidSlackMessage(request)) {
+            return;
         }
+
+        int requestType = request.getParameter("command") != null ? SlackRequest.REQUEST_TYPE_COMMAND : SlackRequest.REQUEST_TYPE_WEBHOOK;
+        SlackRequest slackRequest = new SlackRequest(request, requestType);
+
+        SlackRequestEvent event = new SlackRequestEvent(slackRequest);
+        Sponge.getEventManager().post(event);
     }
 
     /**
-     * Does this request contain a valid message token?
+     * Are the incoming parameters valid?
      *
-     * @param token String
+     * @param request HttpServletRequest
      * @return boolean
      */
-    private boolean isValidMessageToken(String token) {
-        String defaultToken = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.WEBHOOK_SETTINGS, "token").getString("");
-        return (!token.isEmpty() && token.equals(defaultToken));
-    }
+    private boolean isValidSlackMessage(HttpServletRequest request) {
 
-    /**
-     * Does this request contain a valid command token?
-     *
-     * @param command String
-     * @param token   String
-     * @return boolean
-     */
-    private boolean isValidCommandToken(String command, String token) {
-        // TODO: add more verification here for command tokens
-        return (!command.isEmpty() && !token.isEmpty());
+        Enumeration<String> payload = request.getParameterNames();
+        ArrayList<String> invalidParams = new ArrayList<>();
+        while (payload.hasMoreElements()) {
+            String param = payload.nextElement();
+            if (!Arrays.asList(validParams).contains(param)) {
+                invalidParams.add(param);
+            }
+        }
+
+        if (!invalidParams.isEmpty()) {
+            SlackSponge.getLogger().error("The incoming payload contains invalid parameters: " + StringUtils.join(invalidParams, ", "));
+            return false;
+        }
+
+        return true;
     }
 
 }

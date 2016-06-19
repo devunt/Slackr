@@ -1,58 +1,34 @@
 package com.github.glowstone.io.SlackSponge.Events;
 
+import com.github.glowstone.io.SlackSponge.Models.SlackRequest;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Event;
 import org.spongepowered.api.event.cause.Cause;
 
-public class SlackCommandEvent implements Event, Cancellable {
+public class SlackRequestEvent implements Event, Cancellable {
 
-    private final String username;
-    private final String command;
-    private final String text;
+    private final SlackRequest slackRequest;
 
     private final Cause cause;
     private boolean cancelled = false;
 
     /**
-     * SlackCommandEvent constructor
+     * SlackRequestEvent constructor
      *
-     * @param username String
-     * @param command  String
-     * @param text     String
+     * @param slackRequest SlackRequest
      */
-    public SlackCommandEvent(String username, String command, String text) {
-        this.username = username;
-        this.command = command;
-        this.text = text;
-
+    public SlackRequestEvent(SlackRequest slackRequest) {
+        this.slackRequest = slackRequest;
         this.cause = null;
     }
 
     /**
-     * Get the Slack username of the command sender
+     * Get the SlackRequest from this command
      *
      * @return String
      */
-    public String getUsername() {
-        return this.username;
-    }
-
-    /**
-     * Get the command
-     *
-     * @return String
-     */
-    public String getCommand() {
-        return this.command;
-    }
-
-    /**
-     * Get the text of the command
-     *
-     * @return String
-     */
-    public String getText() {
-        return this.text;
+    public SlackRequest getSlackRequest() {
+        return this.slackRequest;
     }
 
     /**

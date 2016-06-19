@@ -2,8 +2,7 @@ package com.github.glowstone.io.SlackSponge;
 
 import com.github.glowstone.io.SlackSponge.Configs.DefaultConfig;
 import com.github.glowstone.io.SlackSponge.Listeners.ChatEventListener;
-import com.github.glowstone.io.SlackSponge.Listeners.SlackCommandListener;
-import com.github.glowstone.io.SlackSponge.Listeners.SlackMessageListener;
+import com.github.glowstone.io.SlackSponge.Listeners.SlackRequestListener;
 import com.github.glowstone.io.SlackSponge.Server.SlackIncomingServer;
 import com.google.inject.Inject;
 import org.slf4j.Logger;
@@ -99,11 +98,8 @@ public class SlackSponge {
     public void onGameInit(GameInitializationEvent event) {
         new SlackIncomingServer();
 
-        // Listen for incoming slack messages
-        Sponge.getEventManager().registerListeners(this, new SlackMessageListener());
-
         // Listen for incoming slack commands
-        Sponge.getEventManager().registerListeners(this, new SlackCommandListener());
+        Sponge.getEventManager().registerListeners(this, new SlackRequestListener());
 
         // Send outgoing message to slack
         Sponge.getEventManager().registerListeners(this, new ChatEventListener());

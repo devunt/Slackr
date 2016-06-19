@@ -4,6 +4,7 @@ import net.gpedro.integrations.slack.SlackMessage;
 
 public class SlackSendService implements Runnable {
 
+    private SlackSender sender;
     private SlackMessage message;
 
     /**
@@ -11,7 +12,8 @@ public class SlackSendService implements Runnable {
      *
      * @param message SlackMessage
      */
-    public SlackSendService(SlackMessage message) {
+    public SlackSendService(SlackSender sender, SlackMessage message) {
+        this.sender = sender;
         this.message = message;
     }
 
@@ -20,7 +22,7 @@ public class SlackSendService implements Runnable {
      */
     @Override
     public void run() {
-        SlackSender.getInstance().getSlackApi().call(this.message);
+        sender.send(this.message.prepare());
     }
 
 }

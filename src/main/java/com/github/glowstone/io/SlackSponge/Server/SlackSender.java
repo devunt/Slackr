@@ -2,36 +2,55 @@ package com.github.glowstone.io.SlackSponge.Server;
 
 import com.github.glowstone.io.SlackSponge.Configs.DefaultConfig;
 import com.github.glowstone.io.SlackSponge.SlackSponge;
-import net.gpedro.integrations.slack.SlackApi;
+import com.google.gson.JsonObject;
 import net.gpedro.integrations.slack.SlackMessage;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
 
 public class SlackSender {
 
-    private static SlackSender instance;
-    private SlackApi api;
+    private static HashMap<String, SlackSender> instances = new HashMap<>();
+    private String url;
+    private int timeout = 5000;
 
     /**
      * SlackSender constructor
+     *
+     * @param url String
      */
-    public SlackSender() {
-        String url = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.WEBHOOK_SETTINGS, "webhookUrl").getString("");
-        this.api = new SlackApi(url);
+    private SlackSender(String url) {
+        this.url = url;
     }
 
     /**
-     * @return SlackApi
-     */
-    public SlackApi getSlackApi() {
-        return this.api;
-    }
-
-    /**
+     * Gets the SlackSender for Slack's incoming webhooks
+     *
      * @return SlackSender
      */
-    public static SlackSender getInstance() {
-        if (instance == null) {
-            instance = new SlackSender();
+    public static SlackSender getWebhookInstance() {
+        String url = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.WEBHOOK_SETTINGS, "webhookUrl").getString("");
+        return getInstance(url);
+    }
+
+    /**
+     * Gets the SlackSender instance for a url, generally a Slack command's response url.
+     *
+     * @param url String
+     * @return SlackSender
+     */
+    public static SlackSender getInstance(String url) {
+        if (instances.containsKey(url)) {
+            return instances.get(url);
         }
+        SlackSender instance = new SlackSender(url);
+        instances.put(url, instance);
         return instance;
     }
 
@@ -41,7 +60,7 @@ public class SlackSender {
      * @param message  String
      * @param username String
      */
-    public void send(String message, String username) {
+    public void sendMessage(String message, String username) {
 
         if (!message.isEmpty() && !username.isEmpty()) {
 
@@ -52,7 +71,7 @@ public class SlackSender {
             slackMessage.setUsername(username);
             slackMessage.setIcon("https://minotar.net/" + (showHelmet ? "helm" : "avatar") + "/" + username + ".png");
 
-            Thread thread = new Thread(new SlackSendService(slackMessage));
+            Thread thread = new Thread(new SlackSendService(this, slackMessage));
             thread.start();
         }
 
@@ -70,9 +89,64 @@ public class SlackSender {
             SlackMessage slackMessage = new SlackMessage();
             slackMessage.setText(message);
 
-            Thread thread = new Thread(new SlackSendService(slackMessage));
+            Thread thread = new Thread(new SlackSendService(this, slackMessage));
             thread.start();
         }
 
     }
+
+    /**
+     * Send json message to this url
+     *
+     * @param message JsonObject
+     * @return String
+     */
+    public String send(JsonObject message) {
+
+        HttpURLConnection connection = null;
+
+        try {
+            // Create connection
+            final URL url = new URL(this.url);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setConnectTimeout(timeout);
+            connection.setUseCaches(false);
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+            final String payload = "payload=" + URLEncoder.encode(message.toString(), "UTF-8");
+
+            // Send request
+            final DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+            wr.writeBytes(payload);
+            wr.flush();
+            wr.close();
+
+            // Get Response
+            final InputStream is = connection.getInputStream();
+            final BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            String line;
+            StringBuilder response = new StringBuilder();
+            while ((line = rd.readLine()) != null) {
+                response.append(line);
+                response.append('\n');
+            }
+
+            rd.close();
+            return response.toString();
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(e);
+
+        } finally {
+
+            if (connection != null) {
+                connection.disconnect();
+            }
+
+        }
+    }
+
 }
