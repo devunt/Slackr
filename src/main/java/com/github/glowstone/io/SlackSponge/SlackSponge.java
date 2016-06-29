@@ -1,6 +1,9 @@
 package com.github.glowstone.io.SlackSponge;
 
+import com.github.glowstone.io.SlackSponge.Commands.AdminCommand;
+import com.github.glowstone.io.SlackSponge.Commands.RegisterCommand;
 import com.github.glowstone.io.SlackSponge.Configs.DefaultConfig;
+import com.github.glowstone.io.SlackSponge.Configs.PlayerConfig;
 import com.github.glowstone.io.SlackSponge.Listeners.ChatEventListener;
 import com.github.glowstone.io.SlackSponge.Listeners.SlackRequestListener;
 import com.github.glowstone.io.SlackSponge.Server.SlackIncomingServer;
@@ -9,13 +12,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.text.Text;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 @Plugin(id = "slacksponge", name = SlackSponge.NAME, version = SlackSponge.VERSION, description = "Send messages to and from Slack")
 public class SlackSponge {
@@ -35,6 +44,7 @@ public class SlackSponge {
     private File configDir;
 
     private static DefaultConfig defaultConfig;
+    private static PlayerConfig playerConfig;
 
     /**
      * Get the plugin instance
@@ -67,6 +77,13 @@ public class SlackSponge {
     }
 
     /**
+     * @return PlayerConfig
+     */
+    public static PlayerConfig getPlayerConfig() {
+        return playerConfig;
+    }
+
+    /**
      * Setup SlackSponge instance, logger and configs
      *
      * @param event GamePreInitializationEvent
@@ -87,6 +104,9 @@ public class SlackSponge {
         // Load default config
         defaultConfig = new DefaultConfig(this.configDir);
         defaultConfig.load();
+
+        playerConfig = new PlayerConfig(this.configDir);
+        playerConfig.load();
     }
 
     /**
@@ -103,6 +123,40 @@ public class SlackSponge {
 
         // Send outgoing message to slack
         Sponge.getEventManager().registerListeners(this, new ChatEventListener());
+
+        // Register commands
+        HashMap<List<String>, CommandSpec> subcommands = new HashMap<>();
+
+        /**
+         * /slack register <token>
+         */
+        subcommands.put(Collections.singletonList("register"), CommandSpec.builder()
+                .permission("slack.register")
+                .description(Text.of("Register you Slack user."))
+                .executor(new RegisterCommand())
+                .arguments(GenericArguments.string(Text.of("token")))
+                .build());
+
+        /**
+         * /slack admin [-a] [-r] [-d] [player]
+         */
+        subcommands.put(Collections.singletonList("allow"), CommandSpec.builder()
+                .permission("slack.admin")
+                .description(Text.of("Administrate Slack user privileges."))
+                .executor(new AdminCommand())
+                .arguments(
+                        GenericArguments.optional(
+                                GenericArguments.flags().flag("a").flag("r").buildWith(
+                                        GenericArguments.player(Text.of("player"))
+                                )
+                        )
+                )
+                .build());
+
+        CommandSpec slackCommand = CommandSpec.builder()
+                .children(subcommands)
+                .build();
+        game.getCommandManager().register(this, slackCommand, "slack");
     }
 
 }
