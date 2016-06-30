@@ -1,6 +1,7 @@
 package com.github.glowstone.io.SlackSponge.Server;
 
 import com.github.glowstone.io.SlackSponge.Configs.DefaultConfig;
+import com.github.glowstone.io.SlackSponge.Runnables.SlackSendRunnable;
 import com.github.glowstone.io.SlackSponge.SlackSponge;
 import com.google.gson.JsonObject;
 import net.gpedro.integrations.slack.SlackMessage;
@@ -12,21 +13,25 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.HashMap;
 
 public class SlackSender {
 
-    private static HashMap<String, SlackSender> instances = new HashMap<>();
+    private static SlackSender instance;
     private String url;
     private int timeout = 5000;
 
     /**
-     * SlackSender constructor
-     *
      * @param url String
      */
-    private SlackSender(String url) {
+    public void setUrl(String url) {
         this.url = url;
+    }
+
+    /**
+     * @param timeout int
+     */
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
 
     /**
@@ -46,11 +51,11 @@ public class SlackSender {
      * @return SlackSender
      */
     public static SlackSender getInstance(String url) {
-        if (instances.containsKey(url)) {
-            return instances.get(url);
+        if (instance != null) {
+            return instance;
         }
-        SlackSender instance = new SlackSender(url);
-        instances.put(url, instance);
+        SlackSender instance = new SlackSender();
+        instance.setUrl(url);
         return instance;
     }
 
@@ -71,7 +76,7 @@ public class SlackSender {
             slackMessage.setUsername(username);
             slackMessage.setIcon("https://minotar.net/" + (showHelmet ? "helm" : "avatar") + "/" + username + ".png");
 
-            Thread thread = new Thread(new SlackSendService(this, slackMessage));
+            Thread thread = new Thread(new SlackSendRunnable(this, slackMessage));
             thread.start();
         }
 
@@ -89,7 +94,7 @@ public class SlackSender {
             SlackMessage slackMessage = new SlackMessage();
             slackMessage.setText(message);
 
-            Thread thread = new Thread(new SlackSendService(this, slackMessage));
+            Thread thread = new Thread(new SlackSendRunnable(this, slackMessage));
             thread.start();
         }
 

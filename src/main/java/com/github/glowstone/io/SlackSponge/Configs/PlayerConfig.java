@@ -94,47 +94,12 @@ public class PlayerConfig extends Config {
     }
 
     /**
-     * Set a player's privilege to send commands from Slack
-     *
-     * @param player        Player
-     * @param allowCommands boolean
-     * @return boolean
-     */
-    public boolean setPlayerPrivilages(Player player, boolean allowCommands) {
-        if (!isPlayerRegistered(player)) {
-            return false;
-        }
-
-        Iterator<Object> it = get().getChildrenMap().keySet().iterator();
-        while (it.hasNext()) {
-            String userId = it.next().toString();
-            if (player.getUniqueId().toString().equals(get().getNode(userId, "player").getString(""))) {
-                get().getNode(userId, "commander").setValue(allowCommands);
-                save();
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Does this Slack user have privileges to send commands to Minecraft?
-     *
-     * @param userId String
-     * @return boolean
-     */
-    public boolean hasCommandPrivileges(String userId) {
-        return get().getNode(userId, "commander").getBoolean(false);
-    }
-
-    /**
      * Remove this player's Slack information
      *
      * @param player Player
      * @return boolean
      */
-    public boolean deleteSlackPlayerInformation(Player player) {
+    public boolean removeSlackPlayerInformation(Player player) {
         if (!isPlayerRegistered(player)) {
             return false;
         }

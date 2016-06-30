@@ -1,18 +1,19 @@
-package com.github.glowstone.io.SlackSponge.Server;
+package com.github.glowstone.io.SlackSponge.Runnables;
 
+import com.github.glowstone.io.SlackSponge.Server.SlackSender;
 import net.gpedro.integrations.slack.SlackMessage;
 
-public class SlackSendService implements Runnable {
+public class SlackSendRunnable implements Runnable {
 
     private SlackSender sender;
     private SlackMessage message;
 
     /**
-     * SlackSendService constructor
+     * SlackSendRunnable constructor
      *
      * @param message SlackMessage
      */
-    public SlackSendService(SlackSender sender, SlackMessage message) {
+    public SlackSendRunnable(SlackSender sender, SlackMessage message) {
         this.sender = sender;
         this.message = message;
     }

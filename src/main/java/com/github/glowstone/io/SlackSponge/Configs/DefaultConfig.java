@@ -25,6 +25,9 @@ public class DefaultConfig extends Config {
      * Set this config's default values
      */
     protected void setDefaults() {
+        get().getNode(COMMAND_SETTINGS, "token").setValue("");
+        get().getNode(COMMAND_SETTINGS, "command").setValue("mc");
+
         get().getNode(GENERAL_SETTINGS, "port").setValue(8765);
         get().getNode(GENERAL_SETTINGS, "showHelmet").setValue(true);
 

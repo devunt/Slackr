@@ -1,26 +1,16 @@
 package com.github.glowstone.io.SlackSponge.Listeners;
 
-import com.github.glowstone.io.SlackSponge.Commands.SlackCommandSource;
 import com.github.glowstone.io.SlackSponge.Configs.DefaultConfig;
 import com.github.glowstone.io.SlackSponge.Events.SlackRequestEvent;
-import com.github.glowstone.io.SlackSponge.Models.SlackMessageChannel;
 import com.github.glowstone.io.SlackSponge.Models.SlackRequest;
+import com.github.glowstone.io.SlackSponge.Runnables.SlackCommandRunnable;
 import com.github.glowstone.io.SlackSponge.Server.SlackSender;
 import com.github.glowstone.io.SlackSponge.SlackSponge;
-import net.gpedro.integrations.slack.SlackMessage;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandManager;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-
-import java.util.Collection;
-import java.util.Optional;
-import java.util.UUID;
 
 public class SlackRequestListener {
 
@@ -86,83 +76,44 @@ public class SlackRequestListener {
      */
     private void handleCommandRequest(SlackRequest request) {
 
-        // TODO: Validate incoming command token
+        // Validate command token
+        if (!SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.COMMAND_SETTINGS, "token").getString("").equals(request.getToken())) {
+            SlackSponge.getLogger().error("The command token from Slack doesn't match the webhook token in SlackSponge.conf");
+            return;
+        }
 
+        // Validate slack id is associated with a Player
         if (!SlackSponge.getPlayerConfig().isSlackUserRegistered(request.getUserId())) {
             String token = SlackSponge.getPlayerConfig().generateSlackUserToken(request.getUserId());
-            String message = "You have not verified you Slack account with this Minecraft server."
-                    + " Please run \"/slack register " + token + "\" in game to verify your Slack account";
+            String message = String.format("You have not verified you Slack account with this Minecraft server. Please run \"/slack register %s\" in game to verify your Slack account", token);
             SlackSender.getInstance(request.getResponseUrl()).sendCommandResponse(message);
             return;
         }
 
-        StringBuilder message = new StringBuilder();
-        switch (request.getCommand().toLowerCase().substring(1)) {
-
-            case "mcommand":
-
-                if (!SlackSponge.getPlayerConfig().hasCommandPrivileges(request.getUserId())) {
-                    message.append("You do not have privileges to send commands to this Minecraft server.");
-                    break;
-                }
-
-                if (request.getText().isEmpty()) {
-                    message.append("Invalid command. Usage: /mcommand <command>");
-                    break;
-                }
-
-                Task.Builder taskBuilder = Sponge.getScheduler().createTaskBuilder();
-                taskBuilder.execute(() -> {
-                    Optional<SlackCommandSource> optionalCommandSource = this.getCommandSource(request);
-                    if (optionalCommandSource.isPresent()) {
-                        SlackMessageChannel messageChannel = new SlackMessageChannel();
-                        SlackCommandSource commandSource = optionalCommandSource.get();
-                        messageChannel.getMembers().add(commandSource);
-                        commandSource.setMessageChannel(messageChannel);
-                        CommandManager commandManager = Sponge.getCommandManager();
-                        commandManager.process(commandSource, request.getText());
-                        SlackSender.getInstance(request.getResponseUrl()).sendCommandResponse(messageChannel.getCommandResult());
-                        messageChannel.getMembers().remove(commandSource);
-                    }
-                }).name("SlackSponge - Process command from Slack").submit(SlackSponge.getInstance());
-                break;
-
-            case "mc":
-
-                Collection<Player> players = Sponge.getGame().getServer().getOnlinePlayers();
-                message.append(String.valueOf(players.size())).append(", Player(s): ");
-                for (Player p : players) {
-                    message.append(p.getName());
-                }
-                break;
-
-            default:
-                message.append("Sponge doesn't know how to handle this command.");
-                break;
-
+        // Validate incoming command
+        String command = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.COMMAND_SETTINGS, "command").getString("");
+        if (!request.getCommand().toLowerCase().substring(1).equals(command.toLowerCase())) {
+            String message = "The Minecraft server doesn't know how to handle this command.";
+            SlackSender.getInstance(request.getResponseUrl()).sendCommandResponse(message);
+            return;
         }
 
+        // Validate command text is not empty
+        if (request.getText().isEmpty()) {
+            String message = String.format("Invalid command. Usage: /%s <command>", command);
+            SlackSender.getInstance(request.getResponseUrl()).sendCommandResponse(message);
+            return;
+        }
+
+        // Don't process command if there is no response url
         if (request.getResponseUrl().isEmpty()) {
             SlackSponge.getLogger().error(String.format("Slack command contained no response url: %s", request.getCommand()));
             return;
         }
 
-        SlackSender.getInstance(request.getResponseUrl()).sendCommandResponse(message.toString());
-    }
-
-    private Optional<SlackCommandSource> getCommandSource(SlackRequest request) {
-        String uuid = SlackSponge.getPlayerConfig().get().getNode(request.getUserId(), "player").getString("");
-        Optional<UserStorageService> optionalService = Sponge.getServiceManager().provide(UserStorageService.class);
-        if (optionalService.isPresent()) {
-            UserStorageService userStorageService = optionalService.get();
-            Optional<User> optionalUser = userStorageService.get(UUID.fromString(uuid));
-            if (optionalUser.isPresent()) {
-                User user = optionalUser.get();
-                return Optional.of(new SlackCommandSource(user));
-            }
-        }
-
-        return Optional.empty();
+        // Process the command from Slack
+        Task.Builder taskBuilder = Sponge.getScheduler().createTaskBuilder();
+        taskBuilder.execute(new SlackCommandRunnable(request)).name("SlackSponge - Process command from Slack").submit(SlackSponge.getInstance());
     }
 
 }

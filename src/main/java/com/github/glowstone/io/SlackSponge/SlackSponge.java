@@ -1,7 +1,7 @@
 package com.github.glowstone.io.SlackSponge;
 
-import com.github.glowstone.io.SlackSponge.Commands.AdminCommand;
 import com.github.glowstone.io.SlackSponge.Commands.RegisterCommand;
+import com.github.glowstone.io.SlackSponge.Commands.UnregisterCommand;
 import com.github.glowstone.io.SlackSponge.Configs.DefaultConfig;
 import com.github.glowstone.io.SlackSponge.Configs.PlayerConfig;
 import com.github.glowstone.io.SlackSponge.Listeners.ChatEventListener;
@@ -134,28 +134,26 @@ public class SlackSponge {
                 .permission("slack.register")
                 .description(Text.of("Register you Slack user."))
                 .executor(new RegisterCommand())
-                .arguments(GenericArguments.string(Text.of("token")))
+                .arguments(
+                        GenericArguments.string(Text.of("token"))
+                )
                 .build());
 
         /**
-         * /slack admin [-a] [-r] [-d] [player]
+         * /slack unregister [player]
          */
-        subcommands.put(Collections.singletonList("allow"), CommandSpec.builder()
-                .permission("slack.admin")
-                .description(Text.of("Administrate Slack user privileges."))
-                .executor(new AdminCommand())
+        subcommands.put(Collections.singletonList("unregister"), CommandSpec.builder()
+                .permission("slack.register")
+                .description(Text.of("Unregister your Slack user."))
+                .executor(new UnregisterCommand())
                 .arguments(
                         GenericArguments.optional(
-                                GenericArguments.flags().flag("a").flag("r").buildWith(
-                                        GenericArguments.player(Text.of("player"))
-                                )
+                                GenericArguments.player(Text.of("player"))
                         )
                 )
                 .build());
 
-        CommandSpec slackCommand = CommandSpec.builder()
-                .children(subcommands)
-                .build();
+        CommandSpec slackCommand = CommandSpec.builder().children(subcommands).build();
         game.getCommandManager().register(this, slackCommand, "slack");
     }
 
