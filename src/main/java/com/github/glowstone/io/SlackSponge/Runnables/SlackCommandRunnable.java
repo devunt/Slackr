@@ -1,6 +1,6 @@
 package com.github.glowstone.io.SlackSponge.Runnables;
 
-import com.github.glowstone.io.SlackSponge.Commands.SlackCommandSource;
+import com.github.glowstone.io.SlackSponge.Models.SlackCommandSource;
 import com.github.glowstone.io.SlackSponge.Models.SlackMessageChannel;
 import com.github.glowstone.io.SlackSponge.Models.SlackRequest;
 import com.github.glowstone.io.SlackSponge.Server.SlackSender;
@@ -33,7 +33,7 @@ public class SlackCommandRunnable implements Runnable {
     public void run() {
 
         String command = request.getText();
-        command = command.startsWith(",") ? command.substring(1) : command;
+        command = command.startsWith("/") ? command.substring(1) : command;
 
         // Get the player's uuid
         UUID uuid;
@@ -48,6 +48,7 @@ public class SlackCommandRunnable implements Runnable {
         // Get the user storage service
         Optional<UserStorageService> optionalService = Sponge.getServiceManager().provide(UserStorageService.class);
         if (!optionalService.isPresent()) {
+            SlackSponge.getLogger().error("User storage service not found.");
             return;
         }
 
@@ -55,18 +56,17 @@ public class SlackCommandRunnable implements Runnable {
         UserStorageService userStorageService = optionalService.get();
         Optional<User> optionalUser = userStorageService.get(uuid);
         if (!optionalUser.isPresent()) {
+            SlackSponge.getLogger().error("User not found.");
             return;
         }
-        User user = optionalUser.get();
 
         // Get the command source
-        Optional<Player> optionalPlayer = user.getPlayer();
-        CommandSource commandSource = (optionalPlayer.isPresent()) ? optionalPlayer.get() : new SlackCommandSource(user);
+        User user = optionalUser.get();
+        CommandSource commandSource = new SlackCommandSource(user);
 
         // Set command sources's message channel
-        MessageChannel originalChannel = commandSource.getMessageChannel();
         SlackMessageChannel slackChannel = new SlackMessageChannel();
-        slackChannel.getMembers().add(commandSource);
+        slackChannel.addMember(commandSource);
         commandSource.setMessageChannel(slackChannel);
 
         // Process the command
@@ -75,13 +75,7 @@ public class SlackCommandRunnable implements Runnable {
 
         // Send command response
         SlackSender.getInstance(request.getResponseUrl()).sendCommandResponse(slackChannel.getCommandResult());
-
-        // Reset the command source's message channel
-        slackChannel.getMembers().remove(commandSource);
-
-        if (commandSource instanceof Player) {
-            commandSource.setMessageChannel(originalChannel);
-        }
+        slackChannel.clearMembers();
     }
 
 }

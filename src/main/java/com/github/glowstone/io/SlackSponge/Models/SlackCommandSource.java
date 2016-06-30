@@ -1,4 +1,4 @@
-package com.github.glowstone.io.SlackSponge.Commands;
+package com.github.glowstone.io.SlackSponge.Models;
 
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.User;

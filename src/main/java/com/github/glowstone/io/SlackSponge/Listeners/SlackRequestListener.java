@@ -78,7 +78,7 @@ public class SlackRequestListener {
 
         // Validate command token
         if (!SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.COMMAND_SETTINGS, "token").getString("").equals(request.getToken())) {
-            SlackSponge.getLogger().error("The command token from Slack doesn't match the webhook token in SlackSponge.conf");
+            SlackSponge.getLogger().error("The command token from Slack doesn't match the command token in SlackSponge.conf");
             return;
         }
 
