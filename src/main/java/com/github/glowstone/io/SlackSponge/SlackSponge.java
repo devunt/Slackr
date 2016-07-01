@@ -4,7 +4,7 @@ import com.github.glowstone.io.SlackSponge.Commands.RegisterCommand;
 import com.github.glowstone.io.SlackSponge.Commands.UnregisterCommand;
 import com.github.glowstone.io.SlackSponge.Configs.DefaultConfig;
 import com.github.glowstone.io.SlackSponge.Configs.PlayerConfig;
-import com.github.glowstone.io.SlackSponge.Listeners.ChatEventListener;
+import com.github.glowstone.io.SlackSponge.Listeners.OutgoingMessageListener;
 import com.github.glowstone.io.SlackSponge.Listeners.SlackRequestListener;
 import com.github.glowstone.io.SlackSponge.Server.SlackIncomingServer;
 import com.google.inject.Inject;
@@ -122,7 +122,7 @@ public class SlackSponge {
         Sponge.getEventManager().registerListeners(this, new SlackRequestListener());
 
         // Send outgoing message to slack
-        Sponge.getEventManager().registerListeners(this, new ChatEventListener());
+        Sponge.getEventManager().registerListeners(this, new OutgoingMessageListener());
 
         // Register commands
         HashMap<List<String>, CommandSpec> subcommands = new HashMap<>();

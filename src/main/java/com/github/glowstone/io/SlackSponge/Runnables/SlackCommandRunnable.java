@@ -8,10 +8,8 @@ import com.github.glowstone.io.SlackSponge.SlackSponge;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
-import org.spongepowered.api.text.channel.MessageChannel;
 
 import java.util.Optional;
 import java.util.UUID;

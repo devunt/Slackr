@@ -60,7 +60,7 @@ public class SlackSender {
     }
 
     /**
-     * Send a message to slack
+     * Send a player message to slack
      *
      * @param message  String
      * @param username String
@@ -76,8 +76,29 @@ public class SlackSender {
             slackMessage.setUsername(username);
             slackMessage.setIcon("https://minotar.net/" + (showHelmet ? "helm" : "avatar") + "/" + username + ".png");
 
-            Thread thread = new Thread(new SlackSendRunnable(this, slackMessage));
-            thread.start();
+            if (SlackSponge.getDefaultConfig().isOutgoingWebhook()) {
+                Thread thread = new Thread(new SlackSendRunnable(this, slackMessage));
+                thread.start();
+            }
+        }
+
+    }
+
+    /**
+     * Send a message to slack
+     *
+     * @param message String
+     */
+    public void sendMessage(String message) {
+
+        if (!message.isEmpty()) {
+            SlackMessage slackMessage = new SlackMessage();
+            slackMessage.setText(message);
+
+            if (SlackSponge.getDefaultConfig().isOutgoingWebhook()) {
+                Thread thread = new Thread(new SlackSendRunnable(this, slackMessage));
+                thread.start();
+            }
         }
 
     }

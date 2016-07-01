@@ -3,7 +3,6 @@ package com.github.glowstone.io.SlackSponge.Configs;
 import com.github.glowstone.io.SlackSponge.SlackSponge;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public class DefaultConfig extends Config {
 
@@ -30,8 +29,48 @@ public class DefaultConfig extends Config {
 
         get().getNode(GENERAL_SETTINGS, "port").setValue(8765);
         get().getNode(GENERAL_SETTINGS, "showHelmet").setValue(true);
+        get().getNode(GENERAL_SETTINGS, "slackMessages", "playerDeath").setValue(true);
+        get().getNode(GENERAL_SETTINGS, "slackMessages", "playerJoin").setValue(true);
+        get().getNode(GENERAL_SETTINGS, "slackMessages", "playerLeave").setValue(true);
 
         get().getNode(WEBHOOK_SETTINGS, "token").setValue("");
         get().getNode(WEBHOOK_SETTINGS, "webhookUrl").setValue("");
     }
+
+    /**
+     * Are outgoing messages webhook settings setup?
+     *
+     * @return boolean
+     */
+    public boolean isOutgoingWebhook() {
+        return !get().getNode(WEBHOOK_SETTINGS, "webhookUrl").getString("").isEmpty();
+    }
+
+    /**
+     * Are Slack death messages turned on?
+     *
+     * @return boolean
+     */
+    public boolean allowDeathMessages() {
+        return get().getNode(GENERAL_SETTINGS, "slackMessages", "playerDeath").getBoolean(false);
+    }
+
+    /**
+     * Are Slack join messages turned on?
+     *
+     * @return boolean
+     */
+    public boolean allowJoinMessages() {
+        return get().getNode(GENERAL_SETTINGS, "slackMessages", "playerJoin").getBoolean(false);
+    }
+
+    /**
+     * Are Slack leave messages turned on?
+     *
+     * @return boolean
+     */
+    public boolean allowLeaveMessages() {
+        return get().getNode(GENERAL_SETTINGS, "slackMessages", "playerLeave").getBoolean(false);
+    }
+
 }
