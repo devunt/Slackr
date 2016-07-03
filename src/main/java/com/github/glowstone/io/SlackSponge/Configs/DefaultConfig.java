@@ -6,9 +6,9 @@ import java.io.File;
 
 public class DefaultConfig extends Config {
 
+    public static final String COMMAND_SETTINGS = "Command Settings";
     public static final String GENERAL_SETTINGS = "General Settings";
     public static final String WEBHOOK_SETTINGS = "Webhook Settings";
-    public static final String COMMAND_SETTINGS = "Command Settings";
 
     /**
      * DefaultConfig constructor
@@ -27,12 +27,15 @@ public class DefaultConfig extends Config {
         get().getNode(COMMAND_SETTINGS, "token").setValue("");
         get().getNode(COMMAND_SETTINGS, "command").setValue("mc");
 
+        get().getNode(GENERAL_SETTINGS, "allCallMod").setValue(true);
+        get().getNode(GENERAL_SETTINGS, "callModChannel").setValue("#admins");
         get().getNode(GENERAL_SETTINGS, "port").setValue(8765);
         get().getNode(GENERAL_SETTINGS, "showHelmet").setValue(true);
-        get().getNode(GENERAL_SETTINGS, "slackMessages", "playerDeath").setValue(true);
-        get().getNode(GENERAL_SETTINGS, "slackMessages", "playerJoin").setValue(true);
-        get().getNode(GENERAL_SETTINGS, "slackMessages", "playerLeave").setValue(true);
+        get().getNode(GENERAL_SETTINGS, "slackTeamDomain").setValue("").setComment("myserver.slack.com");
 
+        get().getNode(WEBHOOK_SETTINGS, "playerDeath").setValue(true);
+        get().getNode(WEBHOOK_SETTINGS, "playerJoin").setValue(true);
+        get().getNode(WEBHOOK_SETTINGS, "playerLeave").setValue(true);
         get().getNode(WEBHOOK_SETTINGS, "token").setValue("");
         get().getNode(WEBHOOK_SETTINGS, "webhookUrl").setValue("");
     }

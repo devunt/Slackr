@@ -35,7 +35,7 @@ public class SlackCommandRunnable implements Runnable {
 
         // Get the player's uuid
         UUID uuid;
-        String uuidString = SlackSponge.getPlayerConfig().get().getNode(request.getUserId(), "player").getString("");
+        String uuidString = SlackSponge.getPlayerConfig().getPlayerId(request.getUserId());
         try {
             uuid = UUID.fromString(uuidString);
         } catch (IllegalArgumentException e) {

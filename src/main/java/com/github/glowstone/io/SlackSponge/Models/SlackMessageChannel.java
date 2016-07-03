@@ -1,14 +1,15 @@
 package com.github.glowstone.io.SlackSponge.Models;
 
-import com.github.glowstone.io.SlackSponge.SlackSponge;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
 import org.spongepowered.api.text.chat.ChatType;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Optional;
 
 public class SlackMessageChannel implements MutableMessageChannel {
 

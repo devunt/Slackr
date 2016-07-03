@@ -104,6 +104,33 @@ public class SlackSender {
     }
 
     /**
+     * Send a message to a Slack channel
+     *
+     * @param channel  String
+     * @param username String
+     * @param message  message
+     */
+    public void sendChannelMessage(String channel, String username, String message) {
+
+        if (!channel.isEmpty() && !username.isEmpty() && !message.isEmpty()) {
+
+            boolean showHelmet = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "showHelmet").getBoolean(true);
+
+            SlackMessage slackMessage = new SlackMessage();
+            slackMessage.setChannel(channel);
+            slackMessage.setText(message);
+            slackMessage.setUsername(username);
+            slackMessage.setIcon("https://minotar.net/" + (showHelmet ? "helm" : "avatar") + "/" + username + ".png");
+
+            if (SlackSponge.getDefaultConfig().isOutgoingWebhook()) {
+                Thread thread = new Thread(new SlackSendRunnable(this, slackMessage));
+                thread.start();
+            }
+        }
+
+    }
+
+    /**
      * Send a command response to slack
      *
      * @param message String

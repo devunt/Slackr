@@ -1,6 +1,7 @@
 package com.github.glowstone.io.SlackSponge;
 
 import com.github.glowstone.io.SlackSponge.Commands.RegisterCommand;
+import com.github.glowstone.io.SlackSponge.Commands.CallModeratorCommand;
 import com.github.glowstone.io.SlackSponge.Commands.UnregisterCommand;
 import com.github.glowstone.io.SlackSponge.Configs.DefaultConfig;
 import com.github.glowstone.io.SlackSponge.Configs.PlayerConfig;
@@ -131,7 +132,6 @@ public class SlackSponge {
          * /slack register <token>
          */
         subcommands.put(Collections.singletonList("register"), CommandSpec.builder()
-                .permission("slack.register")
                 .description(Text.of("Register you Slack user."))
                 .executor(new RegisterCommand())
                 .arguments(
@@ -143,7 +143,6 @@ public class SlackSponge {
          * /slack unregister [player]
          */
         subcommands.put(Collections.singletonList("unregister"), CommandSpec.builder()
-                .permission("slack.register")
                 .description(Text.of("Unregister your Slack user."))
                 .executor(new UnregisterCommand())
                 .arguments(
@@ -153,8 +152,30 @@ public class SlackSponge {
                 )
                 .build());
 
-        CommandSpec slackCommand = CommandSpec.builder().children(subcommands).build();
+        /**
+         * /slack
+         */
+        CommandSpec slackCommand = CommandSpec.builder()
+                .permission("slack.use")
+                .children(subcommands)
+                .build();
+
         game.getCommandManager().register(this, slackCommand, "slack");
+
+        /**
+         * /callmod <message>
+         */
+        CommandSpec callModCommand = CommandSpec.builder()
+                .permission("slack.callmod")
+                .description(Text.of("Call a moderator via Slack"))
+                .executor(new CallModeratorCommand())
+                .arguments(
+                        GenericArguments.remainingJoinedStrings(Text.of("message"))
+                ).build();
+
+        if (getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "allCallMod").getBoolean(false)) {
+            game.getCommandManager().register(this, callModCommand, "callmod");
+        }
     }
 
 }
