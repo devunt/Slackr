@@ -105,6 +105,7 @@ public class SlackSponge {
         // Load default config
         defaultConfig = new DefaultConfig(this.configDir);
         defaultConfig.load();
+        defaultConfig.formatSlackTeamDomain();
 
         playerConfig = new PlayerConfig(this.configDir);
         playerConfig.load();

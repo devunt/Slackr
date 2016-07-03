@@ -6,11 +6,16 @@ import com.github.glowstone.io.SlackSponge.Models.SlackRequest;
 import com.github.glowstone.io.SlackSponge.Runnables.SlackCommandRunnable;
 import com.github.glowstone.io.SlackSponge.Server.SlackSender;
 import com.github.glowstone.io.SlackSponge.SlackSponge;
+import com.github.glowstone.io.SlackSponge.Utilities.FormatMessageUtil;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class SlackRequestListener {
 
@@ -23,6 +28,8 @@ public class SlackRequestListener {
     public void onSlackRequest(SlackRequestEvent event) {
 
         if (!event.isCancelled()) {
+            event.getSlackRequest().setText(FormatMessageUtil.formatIncomingMessage(event.getSlackRequest().getText()));
+
             switch (event.getSlackRequest().getRequestType()) {
 
                 case SlackRequest.REQUEST_TYPE_WEBHOOK:
@@ -61,10 +68,27 @@ public class SlackRequestListener {
         }
 
         String slackMessage = String.format("<%s> %s", request.getUsername(), request.getText());
+        String slackDomain = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "slackTeamDomain").getString("");
 
         Text.Builder message = Text.builder();
-        message.append(Text.of(TextColors.WHITE, "[", TextColors.AQUA, "Slack", TextColors.WHITE, "]"));
-        message.append(Text.of(TextColors.WHITE, " " + slackMessage));
+        message.append(Text.of(TextColors.WHITE, "["));
+
+        if (!slackDomain.isEmpty()) {
+            try {
+
+                URL url = new URL("https://" + slackDomain);
+                Text link = Text.builder("Slack")
+                        .onClick(TextActions.openUrl(url))
+                        .onHover(TextActions.showText(Text.of(TextColors.BLUE, "Join our slack channel: " + slackDomain)))
+                        .color(TextColors.AQUA)
+                        .build();
+                message.append(link);
+
+            } catch (MalformedURLException e) {
+                message.append(Text.of(TextColors.AQUA, "Slack"));
+            }
+        }
+        message.append(Text.of(TextColors.WHITE, "] " + slackMessage));
 
         SlackSponge.getInstance().getGame().getServer().getBroadcastChannel().send(message.build());
     }

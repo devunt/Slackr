@@ -31,13 +31,29 @@ public class DefaultConfig extends Config {
         get().getNode(GENERAL_SETTINGS, "callModChannel").setValue("#admins");
         get().getNode(GENERAL_SETTINGS, "port").setValue(8765);
         get().getNode(GENERAL_SETTINGS, "showHelmet").setValue(true);
-        get().getNode(GENERAL_SETTINGS, "slackTeamDomain").setValue("").setComment("myserver.slack.com");
+        get().getNode(GENERAL_SETTINGS, "slackTeamDomain").setValue("");
 
         get().getNode(WEBHOOK_SETTINGS, "playerDeath").setValue(true);
         get().getNode(WEBHOOK_SETTINGS, "playerJoin").setValue(true);
         get().getNode(WEBHOOK_SETTINGS, "playerLeave").setValue(true);
         get().getNode(WEBHOOK_SETTINGS, "token").setValue("");
         get().getNode(WEBHOOK_SETTINGS, "webhookUrl").setValue("");
+    }
+
+    /**
+     * Format the slackTeamDomain
+     */
+    public void formatSlackTeamDomain() {
+        String domain = get().getNode(GENERAL_SETTINGS, "slackTeamDomain").getString("");
+        if (domain.isEmpty()) {
+            return;
+        }
+        if (domain.contains(".slack.com")) {
+            return;
+        }
+        get().getNode(GENERAL_SETTINGS, "slackTeamDomain").setValue(domain + ".slack.com");
+        save();
+        return;
     }
 
     /**

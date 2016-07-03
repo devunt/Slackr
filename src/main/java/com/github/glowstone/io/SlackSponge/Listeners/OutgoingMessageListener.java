@@ -2,6 +2,7 @@ package com.github.glowstone.io.SlackSponge.Listeners;
 
 import com.github.glowstone.io.SlackSponge.Server.SlackSender;
 import com.github.glowstone.io.SlackSponge.SlackSponge;
+import com.github.glowstone.io.SlackSponge.Utilities.FormatMessageUtil;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -25,10 +26,11 @@ public class OutgoingMessageListener {
         Optional<Player> player = cause.first(Player.class);
 
         String text = event.getRawMessage().toPlain();
+        String formattedText = FormatMessageUtil.formatOutgoingMessage(text);
 
         if (player.isPresent()) {
             String username = player.get().getName();
-            SlackSender.getWebhookInstance().sendMessage(text, username);
+            SlackSender.getWebhookInstance().sendMessage(formattedText, username);
         }
     }
 
