@@ -1,6 +1,6 @@
-package com.github.glowstone.io.SlackSponge.Commands;
+package com.github.glowstone.io.slackr.Commands;
 
-import com.github.glowstone.io.SlackSponge.SlackSponge;
+import com.github.glowstone.io.slackr.Slackr;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -22,16 +22,16 @@ public class UnregisterCommand implements CommandExecutor {
         Player player = (Player) src;
         Player target = args.getOne("player").isPresent() ? (Player) args.getOne("player").get() : null;
 
-        // Unregister a target player from slack if command sender has permissions
+        // Unregister a target player from slackr if command sender has permissions
         if (target != null && !player.equals(target)) {
 
-            if (!player.hasPermission("slack.admin")) {
+            if (!player.hasPermission("slackr.admin")) {
                 player.sendMessage(Text.of(TextColors.RED, "You do not have permissions to unregister another player."));
                 return CommandResult.empty();
 
             } else {
 
-                if (SlackSponge.getPlayerConfig().removeSlackPlayerInformation(target)) {
+                if (Slackr.getPlayerConfig().removeSlackPlayerInformation(target)) {
                     player.sendMessage(Text.of(TextColors.GREEN, target.getName() + "'s Slack information has been removed."));
                 } else {
                     player.sendMessage(Text.of(TextColors.RED, "No Slack registration found for " + target.getName() + "."));
@@ -40,8 +40,8 @@ public class UnregisterCommand implements CommandExecutor {
             }
         }
 
-        // Unregister command sender from slack
-        if (SlackSponge.getPlayerConfig().removeSlackPlayerInformation(player)) {
+        // Unregister command sender from slackr
+        if (Slackr.getPlayerConfig().removeSlackPlayerInformation(player)) {
             player.sendMessage(Text.of(TextColors.GREEN, "Your Slack information has been removed."));
         } else {
             player.sendMessage(Text.of(TextColors.RED, "No Slack registration found. You may already be unregistered."));

@@ -1,12 +1,12 @@
-package com.github.glowstone.io.SlackSponge.Listeners;
+package com.github.glowstone.io.slackr.Listeners;
 
-import com.github.glowstone.io.SlackSponge.Configs.DefaultConfig;
-import com.github.glowstone.io.SlackSponge.Events.SlackRequestEvent;
-import com.github.glowstone.io.SlackSponge.Models.SlackRequest;
-import com.github.glowstone.io.SlackSponge.Runnables.SlackCommandRunnable;
-import com.github.glowstone.io.SlackSponge.Server.SlackSender;
-import com.github.glowstone.io.SlackSponge.SlackSponge;
-import com.github.glowstone.io.SlackSponge.Utilities.FormatMessageUtil;
+import com.github.glowstone.io.slackr.Configs.DefaultConfig;
+import com.github.glowstone.io.slackr.Events.SlackRequestEvent;
+import com.github.glowstone.io.slackr.Models.SlackRequest;
+import com.github.glowstone.io.slackr.Runnables.SlackCommandRunnable;
+import com.github.glowstone.io.slackr.Server.SlackSender;
+import com.github.glowstone.io.slackr.Slackr;
+import com.github.glowstone.io.slackr.Utilities.FormatMessageUtil;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.scheduler.Task;
@@ -56,9 +56,9 @@ public class SlackRequestListener {
     private void handleWebhookRequest(SlackRequest request) {
 
         // Validate webhook token
-        String webhookToken = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.WEBHOOK_SETTINGS, "token").getString("");
+        String webhookToken = Slackr.getDefaultConfig().get().getNode(DefaultConfig.WEBHOOK_SETTINGS, "token").getString("");
         if (request.getToken().isEmpty() || !request.getToken().equals(webhookToken)) {
-            SlackSponge.getLogger().error("The webhook token from Slack doesn't match the webhook token in SlackSponge.conf");
+            Slackr.getLogger().error("The webhook token from Slack doesn't match the webhook token in slackr.conf");
             return;
         }
 
@@ -68,7 +68,7 @@ public class SlackRequestListener {
         }
 
         String slackMessage = String.format("<%s> %s", request.getUsername(), request.getText());
-        String slackDomain = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "slackTeamDomain").getString("");
+        String slackDomain = Slackr.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "slackTeamDomain").getString("");
 
         Text.Builder message = Text.builder();
         message.append(Text.of(TextColors.WHITE, "["));
@@ -79,7 +79,7 @@ public class SlackRequestListener {
                 URL url = new URL("https://" + slackDomain);
                 Text link = Text.builder("Slack")
                         .onClick(TextActions.openUrl(url))
-                        .onHover(TextActions.showText(Text.of(TextColors.BLUE, "Join our slack channel: " + slackDomain)))
+                        .onHover(TextActions.showText(Text.of(TextColors.BLUE, "Join our slackr channel: " + slackDomain)))
                         .color(TextColors.AQUA)
                         .build();
                 message.append(link);
@@ -90,7 +90,7 @@ public class SlackRequestListener {
         }
         message.append(Text.of(TextColors.WHITE, "] " + slackMessage));
 
-        SlackSponge.getInstance().getGame().getServer().getBroadcastChannel().send(message.build());
+        Slackr.getInstance().getGame().getServer().getBroadcastChannel().send(message.build());
     }
 
     /**
@@ -101,21 +101,21 @@ public class SlackRequestListener {
     private void handleCommandRequest(SlackRequest request) {
 
         // Validate command token
-        if (!SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.COMMAND_SETTINGS, "token").getString("").equals(request.getToken())) {
-            SlackSponge.getLogger().error("The command token from Slack doesn't match the command token in SlackSponge.conf");
+        if (!Slackr.getDefaultConfig().get().getNode(DefaultConfig.COMMAND_SETTINGS, "token").getString("").equals(request.getToken())) {
+            Slackr.getLogger().error("The command token from Slack doesn't match the command token in slackr.conf");
             return;
         }
 
-        // Validate slack id is associated with a Player
-        if (!SlackSponge.getPlayerConfig().isSlackUserRegistered(request.getUserId())) {
-            String token = SlackSponge.getPlayerConfig().generateSlackUserToken(request.getUserId());
-            String message = String.format("You have not verified you Slack account with this Minecraft server. Please run \"/slack register %s\" in game to verify your Slack account", token);
+        // Validate slackr id is associated with a Player
+        if (!Slackr.getPlayerConfig().isSlackUserRegistered(request.getUserId())) {
+            String token = Slackr.getPlayerConfig().generateSlackUserToken(request.getUserId());
+            String message = String.format("You have not verified you Slack account with this Minecraft server. Please run \"/slackr register %s\" in game to verify your Slack account", token);
             SlackSender.getInstance(request.getResponseUrl()).sendCommandResponse(message);
             return;
         }
 
         // Validate incoming command
-        String command = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.COMMAND_SETTINGS, "command").getString("");
+        String command = Slackr.getDefaultConfig().get().getNode(DefaultConfig.COMMAND_SETTINGS, "command").getString("");
         if (!request.getCommand().toLowerCase().substring(1).equals(command.toLowerCase())) {
             String message = "The Minecraft server doesn't know how to handle this command.";
             SlackSender.getInstance(request.getResponseUrl()).sendCommandResponse(message);
@@ -131,13 +131,13 @@ public class SlackRequestListener {
 
         // Don't process command if there is no response url
         if (request.getResponseUrl().isEmpty()) {
-            SlackSponge.getLogger().error(String.format("Slack command contained no response url: %s", request.getCommand()));
+            Slackr.getLogger().error(String.format("Slack command contained no response url: %s", request.getCommand()));
             return;
         }
 
         // Process the command from Slack
         Task.Builder taskBuilder = Sponge.getScheduler().createTaskBuilder();
-        taskBuilder.execute(new SlackCommandRunnable(request)).name("SlackSponge - Process command from Slack").submit(SlackSponge.getInstance());
+        taskBuilder.execute(new SlackCommandRunnable(request)).name("slackr - Process command from Slack").submit(Slackr.getInstance());
     }
 
 }

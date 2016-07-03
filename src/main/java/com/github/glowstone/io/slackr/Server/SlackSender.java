@@ -1,8 +1,8 @@
-package com.github.glowstone.io.SlackSponge.Server;
+package com.github.glowstone.io.slackr.Server;
 
-import com.github.glowstone.io.SlackSponge.Configs.DefaultConfig;
-import com.github.glowstone.io.SlackSponge.Runnables.SlackSendRunnable;
-import com.github.glowstone.io.SlackSponge.SlackSponge;
+import com.github.glowstone.io.slackr.Configs.DefaultConfig;
+import com.github.glowstone.io.slackr.Runnables.SlackSendRunnable;
+import com.github.glowstone.io.slackr.Slackr;
 import com.google.gson.JsonObject;
 import net.gpedro.integrations.slack.SlackMessage;
 
@@ -40,7 +40,7 @@ public class SlackSender {
      * @return SlackSender
      */
     public static SlackSender getWebhookInstance() {
-        String url = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.WEBHOOK_SETTINGS, "webhookUrl").getString("");
+        String url = Slackr.getDefaultConfig().get().getNode(DefaultConfig.WEBHOOK_SETTINGS, "webhookUrl").getString("");
         return getInstance(url);
     }
 
@@ -60,7 +60,7 @@ public class SlackSender {
     }
 
     /**
-     * Send a player message to slack
+     * Send a player message to slackr
      *
      * @param message  String
      * @param username String
@@ -69,14 +69,14 @@ public class SlackSender {
 
         if (!message.isEmpty() && !username.isEmpty()) {
 
-            boolean showHelmet = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "showHelmet").getBoolean(true);
+            boolean showHelmet = Slackr.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "showHelmet").getBoolean(true);
 
             SlackMessage slackMessage = new SlackMessage();
             slackMessage.setText(message);
             slackMessage.setUsername(username);
             slackMessage.setIcon("https://minotar.net/" + (showHelmet ? "helm" : "avatar") + "/" + username + ".png");
 
-            if (SlackSponge.getDefaultConfig().isOutgoingWebhook()) {
+            if (Slackr.getDefaultConfig().isOutgoingWebhook()) {
                 Thread thread = new Thread(new SlackSendRunnable(this, slackMessage));
                 thread.start();
             }
@@ -85,7 +85,7 @@ public class SlackSender {
     }
 
     /**
-     * Send a message to slack
+     * Send a message to slackr
      *
      * @param message String
      */
@@ -95,7 +95,7 @@ public class SlackSender {
             SlackMessage slackMessage = new SlackMessage();
             slackMessage.setText(message);
 
-            if (SlackSponge.getDefaultConfig().isOutgoingWebhook()) {
+            if (Slackr.getDefaultConfig().isOutgoingWebhook()) {
                 Thread thread = new Thread(new SlackSendRunnable(this, slackMessage));
                 thread.start();
             }
@@ -114,7 +114,7 @@ public class SlackSender {
 
         if (!channel.isEmpty() && !username.isEmpty() && !message.isEmpty()) {
 
-            boolean showHelmet = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "showHelmet").getBoolean(true);
+            boolean showHelmet = Slackr.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "showHelmet").getBoolean(true);
 
             SlackMessage slackMessage = new SlackMessage();
             slackMessage.setChannel(channel);
@@ -122,7 +122,7 @@ public class SlackSender {
             slackMessage.setUsername(username);
             slackMessage.setIcon("https://minotar.net/" + (showHelmet ? "helm" : "avatar") + "/" + username + ".png");
 
-            if (SlackSponge.getDefaultConfig().isOutgoingWebhook()) {
+            if (Slackr.getDefaultConfig().isOutgoingWebhook()) {
                 Thread thread = new Thread(new SlackSendRunnable(this, slackMessage));
                 thread.start();
             }
@@ -131,7 +131,7 @@ public class SlackSender {
     }
 
     /**
-     * Send a command response to slack
+     * Send a command response to slackr
      *
      * @param message String
      */

@@ -1,8 +1,8 @@
-package com.github.glowstone.io.SlackSponge.Commands;
+package com.github.glowstone.io.slackr.Commands;
 
-import com.github.glowstone.io.SlackSponge.Configs.DefaultConfig;
-import com.github.glowstone.io.SlackSponge.Server.SlackSender;
-import com.github.glowstone.io.SlackSponge.SlackSponge;
+import com.github.glowstone.io.slackr.Configs.DefaultConfig;
+import com.github.glowstone.io.slackr.Server.SlackSender;
+import com.github.glowstone.io.slackr.Slackr;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -29,7 +29,7 @@ public class CallModeratorCommand implements CommandExecutor {
             return CommandResult.success();
         }
 
-        String channel = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "callModChannel").getString("");
+        String channel = Slackr.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "callModChannel").getString("");
         String username = player.getName();
         if (!channel.isEmpty()) {
             SlackSender.getWebhookInstance().sendChannelMessage(channel, username, message);

@@ -1,6 +1,6 @@
-package com.github.glowstone.io.SlackSponge.Configs;
+package com.github.glowstone.io.slackr.Configs;
 
-import com.github.glowstone.io.SlackSponge.SlackSponge;
+import com.github.glowstone.io.slackr.Slackr;
 
 import java.io.File;
 
@@ -17,7 +17,7 @@ public class DefaultConfig extends Config {
      */
     public DefaultConfig(File configDir) {
         super(configDir);
-        setConfigFile(new File(configDir, SlackSponge.NAME + ".conf"));
+        setConfigFile(new File(configDir, Slackr.NAME + ".conf"));
     }
 
     /**
@@ -48,10 +48,10 @@ public class DefaultConfig extends Config {
         if (domain.isEmpty()) {
             return;
         }
-        if (domain.contains(".slack.com")) {
+        if (domain.contains(".slackr.com")) {
             return;
         }
-        get().getNode(GENERAL_SETTINGS, "slackTeamDomain").setValue(domain + ".slack.com");
+        get().getNode(GENERAL_SETTINGS, "slackTeamDomain").setValue(domain + ".slackr.com");
         save();
         return;
     }

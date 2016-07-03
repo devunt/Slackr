@@ -1,6 +1,6 @@
-package com.github.glowstone.io.SlackSponge.Utilities;
+package com.github.glowstone.io.slackr.Utilities;
 
-import com.github.glowstone.io.SlackSponge.SlackSponge;
+import com.github.glowstone.io.slackr.Slackr;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
@@ -50,13 +50,13 @@ public class FormatMessageUtil {
     }
 
     /**
-     * Get a Player's name from the incoming slack id.
+     * Get a Player's name from the incoming slackr id.
      *
      * @param slackId String
      * @return String
      */
     private static String getPlayerName(String slackId) {
-        String playerId = SlackSponge.getPlayerConfig().getPlayerId(slackId);
+        String playerId = Slackr.getPlayerConfig().getPlayerId(slackId);
         if (playerId == null) {
             return slackId;
         }
@@ -102,7 +102,7 @@ public class FormatMessageUtil {
         }
 
         User user = optionalUser.get();
-        String slackId = SlackSponge.getPlayerConfig().get().getNode(user.getIdentifier(), "slackId").getString("");
+        String slackId = Slackr.getPlayerConfig().get().getNode(user.getIdentifier(), "slackId").getString("");
         return (slackId.isEmpty()) ? playerName : "<@" + slackId + ">";
     }
 }

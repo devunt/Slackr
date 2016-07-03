@@ -1,4 +1,4 @@
-package com.github.glowstone.io.SlackSponge.Models;
+package com.github.glowstone.io.slackr.Models;
 
 import javax.servlet.http.HttpServletRequest;
 

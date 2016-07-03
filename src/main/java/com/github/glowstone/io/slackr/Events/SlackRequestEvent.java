@@ -1,6 +1,6 @@
-package com.github.glowstone.io.SlackSponge.Events;
+package com.github.glowstone.io.slackr.Events;
 
-import com.github.glowstone.io.SlackSponge.Models.SlackRequest;
+import com.github.glowstone.io.slackr.Models.SlackRequest;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Event;
 import org.spongepowered.api.event.cause.Cause;

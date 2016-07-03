@@ -1,6 +1,6 @@
-package com.github.glowstone.io.SlackSponge.Configs;
+package com.github.glowstone.io.slackr.Configs;
 
-import com.github.glowstone.io.SlackSponge.SlackSponge;
+import com.github.glowstone.io.slackr.Slackr;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -110,7 +110,7 @@ abstract public class Config {
             }
 
         } catch (IOException e) {
-            SlackSponge.getLogger().error("There was an error loading the config: " + e.getMessage());
+            Slackr.getLogger().error("There was an error loading the config: " + e.getMessage());
         }
 
     }
@@ -129,7 +129,7 @@ abstract public class Config {
             getConfigLoader().save(get());
 
         } catch (IOException e) {
-            SlackSponge.getLogger().error("There was an error saving the config: " + e.getMessage());
+            Slackr.getLogger().error("There was an error saving the config: " + e.getMessage());
         }
 
     }

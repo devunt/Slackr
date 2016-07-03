@@ -1,4 +1,4 @@
-package com.github.glowstone.io.SlackSponge.Configs;
+package com.github.glowstone.io.slackr.Configs;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.entity.living.player.Player;
@@ -46,7 +46,7 @@ public class PlayerConfig extends Config {
     }
 
     /**
-     * Is this player associated with a slack user?
+     * Is this player associated with a slackr user?
      *
      * @param player Player
      * @return boolean
@@ -103,7 +103,7 @@ public class PlayerConfig extends Config {
     }
 
     /**
-     * Generate a new slack user entry with a random token.
+     * Generate a new slackr user entry with a random token.
      *
      * @param userId String
      * @return String

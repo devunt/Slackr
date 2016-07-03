@@ -1,8 +1,8 @@
-package com.github.glowstone.io.SlackSponge.Server;
+package com.github.glowstone.io.slackr.Server;
 
-import com.github.glowstone.io.SlackSponge.Events.SlackRequestEvent;
-import com.github.glowstone.io.SlackSponge.Models.SlackRequest;
-import com.github.glowstone.io.SlackSponge.SlackSponge;
+import com.github.glowstone.io.slackr.Events.SlackRequestEvent;
+import com.github.glowstone.io.slackr.Models.SlackRequest;
+import com.github.glowstone.io.slackr.Slackr;
 import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.api.Sponge;
 
@@ -62,7 +62,7 @@ public class SlackReceiveServlet extends HttpServlet {
         }
 
         if (!invalidParams.isEmpty()) {
-            SlackSponge.getLogger().error("The incoming payload contains invalid parameters: " + StringUtils.join(invalidParams, ", "));
+            Slackr.getLogger().error("The incoming payload contains invalid parameters: " + StringUtils.join(invalidParams, ", "));
             return false;
         }
 

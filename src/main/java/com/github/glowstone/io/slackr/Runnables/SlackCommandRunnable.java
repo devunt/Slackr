@@ -1,10 +1,10 @@
-package com.github.glowstone.io.SlackSponge.Runnables;
+package com.github.glowstone.io.slackr.Runnables;
 
-import com.github.glowstone.io.SlackSponge.Models.SlackCommandSource;
-import com.github.glowstone.io.SlackSponge.Models.SlackMessageChannel;
-import com.github.glowstone.io.SlackSponge.Models.SlackRequest;
-import com.github.glowstone.io.SlackSponge.Server.SlackSender;
-import com.github.glowstone.io.SlackSponge.SlackSponge;
+import com.github.glowstone.io.slackr.Models.SlackCommandSource;
+import com.github.glowstone.io.slackr.Models.SlackMessageChannel;
+import com.github.glowstone.io.slackr.Models.SlackRequest;
+import com.github.glowstone.io.slackr.Server.SlackSender;
+import com.github.glowstone.io.slackr.Slackr;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.command.CommandSource;
@@ -35,18 +35,18 @@ public class SlackCommandRunnable implements Runnable {
 
         // Get the player's uuid
         UUID uuid;
-        String uuidString = SlackSponge.getPlayerConfig().getPlayerId(request.getUserId());
+        String uuidString = Slackr.getPlayerConfig().getPlayerId(request.getUserId());
         try {
             uuid = UUID.fromString(uuidString);
         } catch (IllegalArgumentException e) {
-            SlackSponge.getLogger().error(e.getMessage());
+            Slackr.getLogger().error(e.getMessage());
             return;
         }
 
         // Get the user storage service
         Optional<UserStorageService> optionalService = Sponge.getServiceManager().provide(UserStorageService.class);
         if (!optionalService.isPresent()) {
-            SlackSponge.getLogger().error("User storage service not found.");
+            Slackr.getLogger().error("User storage service not found.");
             return;
         }
 
@@ -54,7 +54,7 @@ public class SlackCommandRunnable implements Runnable {
         UserStorageService userStorageService = optionalService.get();
         Optional<User> optionalUser = userStorageService.get(uuid);
         if (!optionalUser.isPresent()) {
-            SlackSponge.getLogger().error("User not found.");
+            Slackr.getLogger().error("User not found.");
             return;
         }
 

@@ -1,6 +1,6 @@
-package com.github.glowstone.io.SlackSponge.Runnables;
+package com.github.glowstone.io.slackr.Runnables;
 
-import com.github.glowstone.io.SlackSponge.Server.SlackSender;
+import com.github.glowstone.io.slackr.Server.SlackSender;
 import net.gpedro.integrations.slack.SlackMessage;
 
 public class SlackSendRunnable implements Runnable {

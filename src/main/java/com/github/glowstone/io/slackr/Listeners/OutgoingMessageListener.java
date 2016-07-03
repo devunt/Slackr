@@ -1,8 +1,8 @@
-package com.github.glowstone.io.SlackSponge.Listeners;
+package com.github.glowstone.io.slackr.Listeners;
 
-import com.github.glowstone.io.SlackSponge.Server.SlackSender;
-import com.github.glowstone.io.SlackSponge.SlackSponge;
-import com.github.glowstone.io.SlackSponge.Utilities.FormatMessageUtil;
+import com.github.glowstone.io.slackr.Server.SlackSender;
+import com.github.glowstone.io.slackr.Slackr;
+import com.github.glowstone.io.slackr.Utilities.FormatMessageUtil;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -43,7 +43,7 @@ public class OutgoingMessageListener {
     public void onPlayerDeathEvent(DestructEntityEvent.Death event) {
         Entity target = event.getTargetEntity();
         if (target instanceof Player) {
-            if (SlackSponge.getDefaultConfig().allowDeathMessages()) {
+            if (Slackr.getDefaultConfig().allowDeathMessages()) {
                 SlackSender.getWebhookInstance().sendMessage(event.getMessage().toPlain());
             }
         }
@@ -56,7 +56,7 @@ public class OutgoingMessageListener {
      */
     @Listener
     public void onPlayerJoinEvent(ClientConnectionEvent.Join event) {
-        if (SlackSponge.getDefaultConfig().allowJoinMessages()) {
+        if (Slackr.getDefaultConfig().allowJoinMessages()) {
             SlackSender.getWebhookInstance().sendMessage(event.getMessage().toPlain());
         }
     }
@@ -68,7 +68,7 @@ public class OutgoingMessageListener {
      */
     @Listener
     public void onPlayerLeaveEvent(ClientConnectionEvent.Disconnect event) {
-        if (SlackSponge.getDefaultConfig().allowLeaveMessages()) {
+        if (Slackr.getDefaultConfig().allowLeaveMessages()) {
             SlackSender.getWebhookInstance().sendMessage(event.getMessage().toPlain());
         }
     }

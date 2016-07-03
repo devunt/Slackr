@@ -1,6 +1,6 @@
-package com.github.glowstone.io.SlackSponge.Commands;
+package com.github.glowstone.io.slackr.Commands;
 
-import com.github.glowstone.io.SlackSponge.SlackSponge;
+import com.github.glowstone.io.slackr.Slackr;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -22,12 +22,12 @@ public class RegisterCommand implements CommandExecutor {
         Player player = (Player) src;
         String token = args.<String>getOne("token").get();
 
-        if (SlackSponge.getPlayerConfig().isPlayerRegistered(player)) {
+        if (Slackr.getPlayerConfig().isPlayerRegistered(player)) {
             player.sendMessage(Text.of(TextColors.YELLOW, "You have already verified your Slack account."));
             return CommandResult.empty();
         }
 
-        if (!SlackSponge.getPlayerConfig().registerPlayer(player, token)) {
+        if (!Slackr.getPlayerConfig().registerPlayer(player, token)) {
             player.sendMessage(Text.of(TextColors.YELLOW, "The token you entered is invalid, please try again."));
             return CommandResult.empty();
         }

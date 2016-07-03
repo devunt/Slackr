@@ -1,7 +1,7 @@
-package com.github.glowstone.io.SlackSponge.Server;
+package com.github.glowstone.io.slackr.Server;
 
-import com.github.glowstone.io.SlackSponge.Configs.DefaultConfig;
-import com.github.glowstone.io.SlackSponge.SlackSponge;
+import com.github.glowstone.io.slackr.Configs.DefaultConfig;
+import com.github.glowstone.io.slackr.Slackr;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHandler;
 
@@ -14,7 +14,7 @@ public class SlackIncomingServer {
      */
     public SlackIncomingServer() {
 
-        int port = SlackSponge.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "port").getInt(8765);
+        int port = Slackr.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "port").getInt(8765);
         this.server = new Server(port);
 
         ServletHandler handler = new ServletHandler();
@@ -24,7 +24,7 @@ public class SlackIncomingServer {
         try {
             server.start();
         } catch (Exception e) {
-            SlackSponge.getLogger().error("Error starting SlackSponge server: " + e.getMessage());
+            Slackr.getLogger().error("Error starting slackr server: " + e.getMessage());
         }
     }
 
