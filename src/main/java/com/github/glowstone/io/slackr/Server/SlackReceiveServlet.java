@@ -19,7 +19,7 @@ public class SlackReceiveServlet extends HttpServlet {
 
     private static final String[] validParams = {
             "token", "team_id", "team_domain", "channel_id",  "channel_name", "user_id", "user_name", "text", "timestamp", "trigger_word", "service_id",
-            "command", "response_url"
+            "command", "response_url", "bot_name", "bot_id"
     };
 
     /**

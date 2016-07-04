@@ -12,8 +12,8 @@ import java.util.regex.Pattern;
 
 public class FormatMessageUtil {
 
-    private static final Pattern PATTERN_TYPE_USERNAME = Pattern.compile("<@(\\w+)>");
-    private static final Pattern PATTERN_TYPE_PLAYER = Pattern.compile("@(\\w+)");
+    public static final Pattern PATTERN_TYPE_USERNAME = Pattern.compile("<@(\\w+)>");
+    public static final Pattern PATTERN_TYPE_PLAYER = Pattern.compile("@(\\w+)");
 
     /**
      * Format incoming messages from Slack.
@@ -27,7 +27,7 @@ public class FormatMessageUtil {
         while (matcher.find()) {
             String match = matcher.group();
             String slackId = matcher.group(1);
-            result = result.replace(match, getPlayerName(slackId));
+            result = result.replace(match, getPlayerTag(slackId));
         }
         return result;
     }
@@ -55,7 +55,7 @@ public class FormatMessageUtil {
      * @param slackId String
      * @return String
      */
-    private static String getPlayerName(String slackId) {
+    private static String getPlayerTag(String slackId) {
         String playerId = Slackr.getPlayerConfig().getPlayerId(slackId);
         if (playerId == null) {
             return slackId;
@@ -80,7 +80,7 @@ public class FormatMessageUtil {
         }
 
         User user = optionalUser.get();
-        return user.getName();
+        return "@" + user.getName();
     }
 
     /**

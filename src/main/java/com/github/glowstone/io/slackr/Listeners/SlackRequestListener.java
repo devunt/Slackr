@@ -3,11 +3,13 @@ package com.github.glowstone.io.slackr.Listeners;
 import com.github.glowstone.io.slackr.Configs.DefaultConfig;
 import com.github.glowstone.io.slackr.Events.SlackRequestEvent;
 import com.github.glowstone.io.slackr.Models.SlackRequest;
+import com.github.glowstone.io.slackr.Runnables.NotificationSoundConsumer;
 import com.github.glowstone.io.slackr.Runnables.SlackCommandRunnable;
 import com.github.glowstone.io.slackr.Server.SlackSender;
 import com.github.glowstone.io.slackr.Slackr;
 import com.github.glowstone.io.slackr.Utilities.FormatMessageUtil;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
@@ -16,6 +18,9 @@ import org.spongepowered.api.text.format.TextColors;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.regex.Matcher;
 
 public class SlackRequestListener {
 
@@ -89,8 +94,15 @@ public class SlackRequestListener {
             }
         }
         message.append(Text.of(TextColors.WHITE, "] " + slackMessage));
-
         Slackr.getInstance().getGame().getServer().getBroadcastChannel().send(message.build());
+
+        if (Slackr.getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "notificationSound").getBoolean(false)) {
+            ArrayList<Player> taggedPlayers = getTaggedPlayers(request.getText());
+            for (Player tagged : taggedPlayers) {
+                Task.Builder taskBuilder = Sponge.getScheduler().createTaskBuilder();
+                taskBuilder.execute(new NotificationSoundConsumer(tagged)).intervalTicks(2).name("Slacker - notification").submit(Slackr.getInstance());
+            }
+        }
     }
 
     /**
@@ -109,7 +121,8 @@ public class SlackRequestListener {
         // Validate slackr id is associated with a Player
         if (!Slackr.getPlayerConfig().isSlackUserRegistered(request.getUserId())) {
             String token = Slackr.getPlayerConfig().generateSlackUserToken(request.getUserId());
-            String message = String.format("You have not verified you Slack account with this Minecraft server. Please run \"/slackr register %s\" in game to verify your Slack account", token);
+            String message = String.format("You have not verified you Slack account with this Minecraft server. Please run \"/slackr register %s\" in game to" +
+                    " verify your Slack account", token);
             SlackSender.getInstance(request.getResponseUrl()).sendCommandResponse(message);
             return;
         }
@@ -138,6 +151,28 @@ public class SlackRequestListener {
         // Process the command from Slack
         Task.Builder taskBuilder = Sponge.getScheduler().createTaskBuilder();
         taskBuilder.execute(new SlackCommandRunnable(request)).name("slackr - Process command from Slack").submit(Slackr.getInstance());
+    }
+
+    /**
+     * Get tagged players from message.
+     *
+     * @param text String
+     * @return ArrayList<Player>
+     */
+    private ArrayList<Player> getTaggedPlayers(String text) {
+        ArrayList<Player> players = new ArrayList<>();
+        Matcher matcher = FormatMessageUtil.PATTERN_TYPE_PLAYER.matcher(text);
+        Collection<Player> onlinePlayers = Sponge.getServer().getOnlinePlayers();
+        while (matcher.find()) {
+            String playerName = matcher.group(1);
+            for (Player player : onlinePlayers) {
+                if (player.getName().toLowerCase().equals(playerName)) {
+                    players.add(player);
+                }
+            }
+        }
+
+        return players;
     }
 
 }

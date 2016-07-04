@@ -29,6 +29,7 @@ public class DefaultConfig extends Config {
 
         get().getNode(GENERAL_SETTINGS, "allCallMod").setValue(true);
         get().getNode(GENERAL_SETTINGS, "callModChannel").setValue("#admins");
+        get().getNode(GENERAL_SETTINGS, "notificationSound").setValue(true);
         get().getNode(GENERAL_SETTINGS, "port").setValue(8765);
         get().getNode(GENERAL_SETTINGS, "showHelmet").setValue(true);
         get().getNode(GENERAL_SETTINGS, "slackTeamDomain").setValue("");
@@ -48,12 +49,11 @@ public class DefaultConfig extends Config {
         if (domain.isEmpty()) {
             return;
         }
-        if (domain.contains(".slackr.com")) {
+        if (domain.contains(".slack.com")) {
             return;
         }
-        get().getNode(GENERAL_SETTINGS, "slackTeamDomain").setValue(domain + ".slackr.com");
+        get().getNode(GENERAL_SETTINGS, "slackTeamDomain").setValue(domain + ".slack.com");
         save();
-        return;
     }
 
     /**

@@ -17,6 +17,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -109,6 +110,20 @@ public class Slackr {
 
         playerConfig = new PlayerConfig(this.configDir);
         playerConfig.load();
+    }
+
+    @Listener
+    public void onReload(GameReloadEvent event) {
+
+        // Reload configs
+        defaultConfig = new DefaultConfig(this.configDir);
+        defaultConfig.load();
+        defaultConfig.formatSlackTeamDomain();
+
+        playerConfig = new PlayerConfig(this.configDir);
+        playerConfig.load();
+
+        getLogger().info(String.format("%s was reloaded.", Slackr.NAME));
     }
 
     /**
