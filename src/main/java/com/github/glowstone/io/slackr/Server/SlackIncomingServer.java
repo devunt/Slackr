@@ -28,4 +28,12 @@ public class SlackIncomingServer {
         }
     }
 
+    public void stopServer() {
+        try {
+            server.stop();
+        } catch (Exception e) {
+            Slackr.getLogger().error("Error stopping slackr server: " + e.getMessage());
+        }
+    }
+
 }

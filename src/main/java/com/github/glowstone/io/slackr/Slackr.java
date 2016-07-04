@@ -20,6 +20,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 
@@ -47,11 +48,12 @@ public class Slackr {
 
     private static DefaultConfig defaultConfig;
     private static PlayerConfig playerConfig;
+    private SlackIncomingServer incomingServer;
 
     /**
      * Get the plugin instance
      *
-     * @return slackr
+     * @return Slackr
      */
     public static Slackr getInstance() {
         return instance;
@@ -86,7 +88,7 @@ public class Slackr {
     }
 
     /**
-     * Setup slackr instance, logger and configs
+     * Setup Slackr instance, logger and configs
      *
      * @param event GamePreInitializationEvent
      */
@@ -99,7 +101,7 @@ public class Slackr {
 
         if (!this.configDir.isDirectory()) {
             if (this.configDir.mkdir()) {
-                getLogger().info("slackr config directory successfully created!");
+                getLogger().info("Slackr config directory successfully created!");
             }
         }
 
@@ -123,17 +125,21 @@ public class Slackr {
         playerConfig = new PlayerConfig(this.configDir);
         playerConfig.load();
 
+        // Reload incoming server
+        incomingServer.stopServer();
+        incomingServer = new SlackIncomingServer();
+
         getLogger().info(String.format("%s was reloaded.", Slackr.NAME));
     }
 
     /**
-     * Setup slackr's event listeners
+     * Setup Slackr
      *
      * @param event GameInitializationEvent
      */
     @Listener
     public void onGameInit(GameInitializationEvent event) {
-        new SlackIncomingServer();
+        incomingServer = new SlackIncomingServer();
 
         // Listen for incoming slackr commands
         Sponge.getEventManager().registerListeners(this, new SlackRequestListener());
@@ -145,7 +151,7 @@ public class Slackr {
         HashMap<List<String>, CommandSpec> subcommands = new HashMap<>();
 
         /**
-         * /slackr register <token>
+         * /slack register <token>
          */
         subcommands.put(Collections.singletonList("register"), CommandSpec.builder()
                 .description(Text.of("Register you Slack user."))
@@ -156,7 +162,7 @@ public class Slackr {
                 .build());
 
         /**
-         * /slackr unregister [player]
+         * /slack unregister [player]
          */
         subcommands.put(Collections.singletonList("unregister"), CommandSpec.builder()
                 .description(Text.of("Unregister your Slack user."))
@@ -169,20 +175,20 @@ public class Slackr {
                 .build());
 
         /**
-         * /slackr
+         * /slack
          */
         CommandSpec slackCommand = CommandSpec.builder()
-                .permission("slackr.use")
+                .permission("slack.use")
                 .children(subcommands)
                 .build();
 
-        game.getCommandManager().register(this, slackCommand, "slackr");
+        game.getCommandManager().register(this, slackCommand, "slack");
 
         /**
          * /callmod <message>
          */
         CommandSpec callModCommand = CommandSpec.builder()
-                .permission("slackr.callmod")
+                .permission("slack.callmod")
                 .description(Text.of("Call a moderator via Slack"))
                 .executor(new CallModeratorCommand())
                 .arguments(
@@ -192,6 +198,12 @@ public class Slackr {
         if (getDefaultConfig().get().getNode(DefaultConfig.GENERAL_SETTINGS, "allCallMod").getBoolean(false)) {
             game.getCommandManager().register(this, callModCommand, "callmod");
         }
+    }
+
+    @Listener
+    public void onStop(GameStoppingServerEvent event) {
+        // Stop incoming server
+        incomingServer.stopServer();
     }
 
 }

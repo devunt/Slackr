@@ -63,7 +63,7 @@ public class SlackRequestListener {
         // Validate webhook token
         String webhookToken = Slackr.getDefaultConfig().get().getNode(DefaultConfig.WEBHOOK_SETTINGS, "token").getString("");
         if (request.getToken().isEmpty() || !request.getToken().equals(webhookToken)) {
-            Slackr.getLogger().error("The webhook token from Slack doesn't match the webhook token in slackr.conf");
+            Slackr.getLogger().error("The webhook token from Slack doesn't match the webhook token in Slackr.conf");
             return;
         }
 
@@ -84,7 +84,7 @@ public class SlackRequestListener {
                 URL url = new URL("https://" + slackDomain);
                 Text link = Text.builder("Slack")
                         .onClick(TextActions.openUrl(url))
-                        .onHover(TextActions.showText(Text.of(TextColors.BLUE, "Join our slackr channel: " + slackDomain)))
+                        .onHover(TextActions.showText(Text.of(TextColors.BLUE, "Join our Slack channel: " + slackDomain)))
                         .color(TextColors.AQUA)
                         .build();
                 message.append(link);
@@ -121,7 +121,7 @@ public class SlackRequestListener {
         // Validate slackr id is associated with a Player
         if (!Slackr.getPlayerConfig().isSlackUserRegistered(request.getUserId())) {
             String token = Slackr.getPlayerConfig().generateSlackUserToken(request.getUserId());
-            String message = String.format("You have not verified you Slack account with this Minecraft server. Please run \"/slackr register %s\" in game to" +
+            String message = String.format("You have not verified you Slack account with this Minecraft server. Please run \"/slack register %s\" in game to" +
                     " verify your Slack account", token);
             SlackSender.getInstance(request.getResponseUrl()).sendCommandResponse(message);
             return;
@@ -150,7 +150,7 @@ public class SlackRequestListener {
 
         // Process the command from Slack
         Task.Builder taskBuilder = Sponge.getScheduler().createTaskBuilder();
-        taskBuilder.execute(new SlackCommandRunnable(request)).name("slackr - Process command from Slack").submit(Slackr.getInstance());
+        taskBuilder.execute(new SlackCommandRunnable(request)).name("Slackr - Process command from Slack").submit(Slackr.getInstance());
     }
 
     /**

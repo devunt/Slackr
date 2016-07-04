@@ -71,7 +71,7 @@ public class DefaultConfig extends Config {
      * @return boolean
      */
     public boolean allowDeathMessages() {
-        return get().getNode(GENERAL_SETTINGS, "slackMessages", "playerDeath").getBoolean(false);
+        return get().getNode(GENERAL_SETTINGS, "playerDeath").getBoolean(false);
     }
 
     /**
@@ -80,7 +80,7 @@ public class DefaultConfig extends Config {
      * @return boolean
      */
     public boolean allowJoinMessages() {
-        return get().getNode(GENERAL_SETTINGS, "slackMessages", "playerJoin").getBoolean(false);
+        return get().getNode(GENERAL_SETTINGS, "playerJoin").getBoolean(false);
     }
 
     /**
@@ -89,7 +89,7 @@ public class DefaultConfig extends Config {
      * @return boolean
      */
     public boolean allowLeaveMessages() {
-        return get().getNode(GENERAL_SETTINGS, "slackMessages", "playerLeave").getBoolean(false);
+        return get().getNode(GENERAL_SETTINGS, "playerLeave").getBoolean(false);
     }
 
 }

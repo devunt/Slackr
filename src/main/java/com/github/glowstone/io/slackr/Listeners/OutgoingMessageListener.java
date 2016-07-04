@@ -39,7 +39,7 @@ public class OutgoingMessageListener {
             ArrayList<Player> taggedPlayers = getTaggedPlayers(text);
             for (Player tagged : taggedPlayers) {
                 Task.Builder taskBuilder = Sponge.getScheduler().createTaskBuilder();
-                taskBuilder.execute(new NotificationSoundConsumer(tagged)).intervalTicks(2).name("Slacker - notification").submit(Slackr.getInstance());
+                taskBuilder.execute(new NotificationSoundConsumer(tagged)).intervalTicks(2).name("Slackr - notification").submit(Slackr.getInstance());
             }
         }
 
