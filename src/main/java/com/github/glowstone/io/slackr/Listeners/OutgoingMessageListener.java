@@ -81,7 +81,11 @@ public class OutgoingMessageListener {
         Entity target = event.getTargetEntity();
         if (target instanceof Player) {
             if (Slackr.getDefaultConfig().allowDeathMessages()) {
-                SlackSender.getWebhookInstance().sendMessage(event.getMessage().toPlain());
+                String text = event.getMessage().toPlain();
+                String formattedText = String.format("[%s]", text);
+
+                String username = ((Player) target).getName();
+                SlackSender.getWebhookInstance().sendMessage(formattedText, username);
             }
         }
     }
@@ -94,7 +98,16 @@ public class OutgoingMessageListener {
     @Listener
     public void onPlayerJoinEvent(ClientConnectionEvent.Join event) {
         if (Slackr.getDefaultConfig().allowJoinMessages()) {
-            SlackSender.getWebhookInstance().sendMessage(event.getMessage().toPlain());
+            Cause cause = event.getCause();
+            Optional<Player> player = cause.first(Player.class);
+
+            String text = event.getMessage().toPlain();
+            String formattedText = String.format("[%s]", text);
+
+            if (player.isPresent()) {
+                String username = player.get().getName();
+                SlackSender.getWebhookInstance().sendMessage(formattedText, username);
+            }
         }
     }
 
@@ -106,8 +119,16 @@ public class OutgoingMessageListener {
     @Listener
     public void onPlayerLeaveEvent(ClientConnectionEvent.Disconnect event) {
         if (Slackr.getDefaultConfig().allowLeaveMessages()) {
-            SlackSender.getWebhookInstance().sendMessage(event.getMessage().toPlain());
+            Cause cause = event.getCause();
+            Optional<Player> player = cause.first(Player.class);
+
+            String text = event.getMessage().toPlain();
+            String formattedText = String.format("[%s]", text);
+
+            if (player.isPresent()) {
+                String username = player.get().getName();
+                SlackSender.getWebhookInstance().sendMessage(formattedText, username);
+            }
         }
     }
-
 }
